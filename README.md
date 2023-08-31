@@ -63,7 +63,7 @@ Open the `server` and `client` in separate VSCode workspaces or open the combine
 
 ### Purpose
 
-2-5 sentences describing what the system does
+Our system is a financial management tool. Users can log individual expenses, upload files of their monthly expenses from their bank, and add these to budgets the users create. The user will be able to categorize their expenses both in predefined categories and custom made ones. There will be data visualization for the users spending.
 
 ### Pages
 
