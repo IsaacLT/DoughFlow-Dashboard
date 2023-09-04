@@ -76,4 +76,5 @@ Our system is a financial management tool. Users can log individual expenses, up
 
 ## Teaser (MS3)
 
-![Teaser](./images/teaser.png)
+![Imgur](https://i.imgur.com/RYzSmIF.png)
+![Imgur](https://i.imgur.com/LGQhRId.png)
