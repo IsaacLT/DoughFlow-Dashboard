@@ -78,3 +78,4 @@ Our system is a financial management tool. Users can log individual expenses, up
 
 ![Imgur](https://i.imgur.com/RYzSmIF.png)
 ![Imgur](https://i.imgur.com/LGQhRId.png)
+![Imgur](./images/Budget Management.png)
