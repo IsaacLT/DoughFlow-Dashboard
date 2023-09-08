@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 
 // Connect to MongoDB
-var db = mongoose.connect( 'mongodb://0.0.0.0:27017/', {useNewUrlParser: true});
+var db = mongoose.connect( 'mongodb://0.0.0.0:27017/', {useNewUrlParser: true})
 
 // Create schema for budget entity
 var budget = new mongoose.Schema({
@@ -26,11 +26,6 @@ var budget = new mongoose.Schema({
     expenses: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'expense' 
-    }],
-    //Reference to the catergory model
-    categories: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'category'
     }],
 });
 
