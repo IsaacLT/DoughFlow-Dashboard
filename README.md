@@ -68,7 +68,8 @@ Our system is a financial management tool. Users can log individual expenses, up
 ### Pages
 
 * Home: 1-3 sentences describing what the page displays and what a user can do
-* Shopping cart: ...
+* Login page: page for user to log in to their created account, alternatively for creating a new accouunt.
+* 
 
 ### Entity-Relationship (ER) Diagram
 
