@@ -68,8 +68,10 @@ Our system is a financial management tool. Users can log individual expenses, up
 ### Pages
 
 * Home: 1-3 sentences describing what the page displays and what a user can do
-* Login page: page for user to log in to their created account, alternatively for creating a new accouunt.
-* 
+
+* **Login page:** page for user to log in to their created account, alternatively for creating a new accouunt.
+
+* **Budget Management page:** The budget management page lets the user select between different budgets and see details on the economic status of each category connected to that specific budget. The user can also create new budgets from this page. 
 
 ### Entity-Relationship (ER) Diagram
 
