@@ -1,8 +1,9 @@
 // Import mongoose
-const mongoose = require('mongoose');
+var mongoose = require('mongoose');
 
 // Connect to MongoDB
-var db = mongoose.connect( 'mongodb://0.0.0.0:27017/', {useNewUrlParser: true})
+var mongoURI = process.env.MONGODB_URI || 'mongodb://0.0.0.0:27017/';
+var db = mongoose.connect( mongoURI, {useNewUrlParser: true});
 
 // Create schema for budget entity
 var budget = new mongoose.Schema({
@@ -26,7 +27,7 @@ var budget = new mongoose.Schema({
     expenses: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'expense' 
-    }],
+    }]
 });
 
 module.exports = mongoose.model('budget', budget);
