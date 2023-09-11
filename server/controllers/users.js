@@ -39,7 +39,7 @@ router.patch('/users/:username', async function (req, res) {
     // Save the updated user
     await user.save();
     res.json(user);
-    });
+});
 
 router.delete('/users/:username', async function(req, res) {
     var username = req.params.username;

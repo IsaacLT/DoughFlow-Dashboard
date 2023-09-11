@@ -1,110 +1,190 @@
 {
-	"id": "87611000-d0a4-4d56-90c1-cfb48235cf9f",
-	"name": "server",
-	"timestamp": "2023-09-11T09:56:27.548Z",
-	"collection_id": "29410899-3a1f8efa-9442-476a-9a60-24c12ae14cd9",
-	"folder_id": 0,
-	"environment_id": "0",
-	"totalPass": 0,
-	"delay": 0,
-	"persist": true,
-	"status": "finished",
-	"startedAt": "2023-09-11T09:56:26.529Z",
-	"totalFail": 0,
-	"results": [
+	"info": {
+		"_postman_id": "3a1f8efa-9442-476a-9a60-24c12ae14cd9",
+		"name": "server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29410899"
+	},
+	"item": [
 		{
-			"id": "42e930f3-bc63-41ab-b8e8-5c1a0cb13ca5",
-			"name": "post",
-			"url": "http://localhost:3000/users",
-			"time": 17,
-			"responseCode": {
-				"code": 200,
-				"name": "OK"
-			},
-			"tests": {},
-			"testPassFailCounts": {},
-			"times": [
-				17
-			],
-			"allTests": [
-				{}
-			]
-		},
-		{
-			"id": "d3f97fd7-65ef-4445-9188-24333ecc766d",
-			"name": "getByUsername",
-			"url": "http://localhost:3000/users/user1",
-			"time": 7,
-			"responseCode": {
-				"code": 200,
-				"name": "OK"
-			},
-			"tests": {},
-			"testPassFailCounts": {},
-			"times": [
-				7
-			],
-			"allTests": [
-				{}
-			]
-		},
-		{
-			"id": "99a560ca-a00d-49a9-a8c0-8eb52f50fa64",
-			"name": "patch",
-			"url": "http://localhost:3000/users/user1",
-			"time": 12,
-			"responseCode": {
-				"code": 200,
-				"name": "OK"
-			},
-			"tests": {},
-			"testPassFailCounts": {},
-			"times": [
-				12
-			],
-			"allTests": [
-				{}
-			]
-		},
-		{
-			"id": "0b849804-bee0-4971-99d2-8be37d934e4a",
-			"name": "deleteById",
-			"url": "http://localhost:3000/users/user1",
-			"time": 16,
-			"responseCode": {
-				"code": 200,
-				"name": "OK"
-			},
-			"tests": {},
-			"testPassFailCounts": {},
-			"times": [
-				16
-			],
-			"allTests": [
-				{}
+			"name": "usertests",
+			"item": [
+				{
+					"name": "post",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"user1\",\r\n    \"password\": \"123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getByUsername",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "http://localhost:3000/users/:username",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "user1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "patch",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \"password\": \"16632\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3000/users/:username",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "user1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteById",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/users/:username",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"users",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "user1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
 			]
 		}
 	],
-	"count": 1,
-	"totalTime": 52,
-	"collection": {
-		"requests": [
-			{
-				"id": "42e930f3-bc63-41ab-b8e8-5c1a0cb13ca5",
-				"method": "POST"
-			},
-			{
-				"id": "d3f97fd7-65ef-4445-9188-24333ecc766d",
-				"method": "GET"
-			},
-			{
-				"id": "99a560ca-a00d-49a9-a8c0-8eb52f50fa64",
-				"method": "PATCH"
-			},
-			{
-				"id": "0b849804-bee0-4971-99d2-8be37d934e4a",
-				"method": "DELETE"
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
 			}
-		]
-	}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
 }
