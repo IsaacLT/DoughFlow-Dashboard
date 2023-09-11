@@ -59,12 +59,12 @@ router.patch('/budgets/:id', async (req, res) => {
 });
 
 // Delete all budgets
-router.delete('/budgets/:id', async (req, res) => {
-    var result = await Budget.deleteMany({});
+router.delete('/budgets', async (req, res) => {
+    var result = await Budget.deleteMany({});       // {} matches all objects in the Budget collection
     if (!result.deletedCount) {
         return res.status(404).json({ error: 'No budgets found'});
     } else {
-        res.json({ message: 'Deleted ${result.deletedCount} budgets'});
+        res.json({ message: `Deleted ${result.deletedCount} budgets`});
     }
 });
 
