@@ -30,7 +30,6 @@ app.use(morgan('dev'));
 // Enable cross-origin resource sharing for frontend must be registered before api
 app.options('*', cors());
 app.use(cors());
-
 app.use(usersRouter);
 // Import routes
 app.get('/api', function(req, res) {

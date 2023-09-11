@@ -1,71 +1,110 @@
 {
-	"info": {
-		"_postman_id": "3a1f8efa-9442-476a-9a60-24c12ae14cd9",
-		"name": "server",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "29410899"
-	},
-	"item": [
+	"id": "87611000-d0a4-4d56-90c1-cfb48235cf9f",
+	"name": "server",
+	"timestamp": "2023-09-11T09:56:27.548Z",
+	"collection_id": "29410899-3a1f8efa-9442-476a-9a60-24c12ae14cd9",
+	"folder_id": 0,
+	"environment_id": "0",
+	"totalPass": 0,
+	"delay": 0,
+	"persist": true,
+	"status": "finished",
+	"startedAt": "2023-09-11T09:56:26.529Z",
+	"totalFail": 0,
+	"results": [
 		{
-			"name": "GET /api",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Accept",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{host}}/api",
-					"host": [
-						"{{host}}"
-					],
-					"path": [
-						"api"
-					]
-				}
+			"id": "42e930f3-bc63-41ab-b8e8-5c1a0cb13ca5",
+			"name": "post",
+			"url": "http://localhost:3000/users",
+			"time": 17,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
 			},
-			"response": []
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				17
+			],
+			"allTests": [
+				{}
+			]
 		},
 		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
+			"id": "d3f97fd7-65ef-4445-9188-24333ecc766d",
+			"name": "getByUsername",
+			"url": "http://localhost:3000/users/user1",
+			"time": 7,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				7
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "99a560ca-a00d-49a9-a8c0-8eb52f50fa64",
+			"name": "patch",
+			"url": "http://localhost:3000/users/user1",
+			"time": 12,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				12
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "0b849804-bee0-4971-99d2-8be37d934e4a",
+			"name": "deleteById",
+			"url": "http://localhost:3000/users/user1",
+			"time": 16,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				16
+			],
+			"allTests": [
+				{}
+			]
 		}
 	],
-	"variable": [
-		{
-			"key": "host",
-			"value": "http://localhost:3000",
-			"type": "string"
-		}
-	]
+	"count": 1,
+	"totalTime": 52,
+	"collection": {
+		"requests": [
+			{
+				"id": "42e930f3-bc63-41ab-b8e8-5c1a0cb13ca5",
+				"method": "POST"
+			},
+			{
+				"id": "d3f97fd7-65ef-4445-9188-24333ecc766d",
+				"method": "GET"
+			},
+			{
+				"id": "99a560ca-a00d-49a9-a8c0-8eb52f50fa64",
+				"method": "PATCH"
+			},
+			{
+				"id": "0b849804-bee0-4971-99d2-8be37d934e4a",
+				"method": "DELETE"
+			}
+		]
+	}
 }

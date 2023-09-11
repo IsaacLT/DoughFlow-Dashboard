@@ -12,7 +12,15 @@ var userSchema = new Schema({
     password : {
         type: String,
         required: true
-    }
+    },
+    expenses : [{
+        type: Schema.Types.ObjectId,
+        ref: "expense"
+    }],
+    budgets: [{
+        type: Schema.Types.ObjectId,
+        ref: "budget"
+    }]
 });
 
 var User = mongoose.model('user', userSchema);
