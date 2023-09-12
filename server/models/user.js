@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var mongoURI = process.env.MONGODB_URI || 'mongodb://0.0.0.0:27017/';
+var mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/';
 
 var db = mongoose.connect(mongoURI, {useNewUrlParser: true});
 
