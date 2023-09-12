@@ -32,7 +32,7 @@ router.get('/budgets/:id', async (req, res) => {
 });
 
 // Update all budget attributes (PUT)
-router.put('budgets/:id', async (req, res) => {
+router.put('/budgets/:id', async (req, res) => {
     var updatedBudget = await Budget.findByIdAndUpdate(
         req.params.id,      // Identify the budget yo update it by its unique id
         req.body,           // Contains the updated data for the budget
