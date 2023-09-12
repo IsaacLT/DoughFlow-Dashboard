@@ -7,7 +7,7 @@ var history = require('connect-history-api-fallback');
 var userRouter = require('./controllers/users');
 
 // Variables
-var mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/';
+var mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/';
 var port = process.env.PORT || 3000;
 
 // Connect to MongoDB

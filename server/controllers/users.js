@@ -5,7 +5,7 @@ var User = require('../models/user');
 router.post('/users', async function (req, res) {
     var username = req.body.username;
     var password = req.body.password;
-    var existingUsername = await User.findOne({username: username})
+    var existingUsername = await User.findOne({username: username});
     if(existingUsername) {
         return res.status(400).json({message: 'Username already exists'});
     } else {

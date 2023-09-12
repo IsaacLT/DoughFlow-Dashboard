@@ -294,12 +294,10 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://localhost:3000/users/:username",
-							"protocol": "http",
+							"raw": "{{host}}/users/:username",
 							"host": [
-								"localhost"
+								"{{host}}"
 							],
-							"port": "3000",
 							"path": [
 								"users",
 								":username"
