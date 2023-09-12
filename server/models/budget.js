@@ -24,9 +24,9 @@ var budget = new mongoose.Schema({
         ref: 'user'
     },
     // Reference to the expense model
-    expenses: [{
+    categories: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'expense' 
+        ref: 'category' 
     }]
 });
 
