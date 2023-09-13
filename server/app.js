@@ -4,10 +4,10 @@ var morgan = require('morgan');
 var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
-var expenseRouter = require('./controllers/expenses');
+var userRouter = require('./controllers/users');
 
 // Variables
-var mongoURI = process.env.MONGODB_URI || 'mongodb://0.0.0.0:27017/';
+var mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/';
 var port = process.env.PORT || 3000;
 
 // Connect to MongoDB
@@ -32,6 +32,7 @@ app.options('*', cors());
 app.use(cors());
 app.use(expenseRouter);
 
+app.use(userRouter);
 // Import routes
 app.get('/api', function(req, res) {
     res.json({'message': 'Welcome to your DIT342 backend ExpressJS project!'});
