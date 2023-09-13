@@ -1,15 +1,41 @@
-var express = require("express");
-var router = express.Router();
-var User = require('../models/user');
+const express = require("express");
+const router = express.Router();
+const User = require('../models/user');
+const jwt = require('jsonwebtoken');
+const authenticator = require('../authenticator');
+const config = require('../config');
+
+router.post('/login', async function (req, res) {
+    const username = req.body.username;
+    const password = req.body.password;
+
+    // Query the database to retrieve a user by username
+    const user = await User.findOne({username});
+
+    //if there is no user return error code
+    if (!user) {
+        return res.status(404).json({message: "Username not found"});
+    }
+
+    // Check if the provided password matches the user's password
+    if (user.password !== password) {
+        return res.status(401).json({ message: 'Incorrect password' });
+    }
+
+    // If the username and password are correct, generate a JWT token
+    const token = jwt.sign({username: user.username, userId: user._id}, config.jwtKey, { expiresIn: '2h' });
+
+    res.json({ message: 'Login successful', token});
+});
 
 router.post('/users', async function (req, res) {
-    var username = req.body.username;
-    var password = req.body.password;
-    var existingUsername = await User.findOne({username: username});
+    const username = req.body.username;
+    const password = req.body.password;
+    const existingUsername = await User.findOne({username: username});
     if(existingUsername) {
         return res.status(400).json({message: 'Username already exists'});
     } else {
-        var user = new User({
+        const user = new User({
         "username" : username,
         "password" : password
     });
@@ -18,20 +44,20 @@ router.post('/users', async function (req, res) {
     }
 });
 
-router.get('/users/:username', async function (req, res) {
-    var username = req.params.username;
+router.get('/users/:username', authenticator, async function (req, res) {
+    const username = req.params.username;
     // Query the database to retrieve a user by username
-    var user = await User.findOne({username});
+    const user = await User.findOne({username});
     if (!user) {
     return res.status(404).json({ message: 'User not found' });
     }
     res.json(user);
 });
 
-router.patch('/users/:username', async function (req, res) {
-    var username = req.params.username;
+router.patch('/users/:username', authenticator, async function (req, res) {
+    const username = req.params.username;
     // Query the database to retrieve a user by username
-    var user = await User.findOne({username});
+    const user = await User.findOne({username});
     if (!user) {
             return res.status(404).json({ message: 'User not found' });
     }
@@ -41,10 +67,10 @@ router.patch('/users/:username', async function (req, res) {
     res.json(user);
 });
 
-router.delete('/users/:username', async function(req, res) {
-    var username = req.params.username;
+router.delete('/users/:username', authenticator, async function(req, res) {
+    const username = req.user.username;
     // Query the database to retrieve a user by username
-    var user = await User.findOne({username});
+    const user = await User.findOne({username});
     if (!user) {
         return res.status(404).json({ message: 'User not found' });
     } 
@@ -53,21 +79,21 @@ router.delete('/users/:username', async function(req, res) {
     res.json({message: 'User deleted succesfully'});
 });
 
-router.get('/users/:username/budgets', async function (req, res) {
-    var username = req.params.username;
+router.get('/users/:username/budgets', authenticator, async function (req, res) {
+    const username = req.params.username;
     // Query the database to retrieve a user by ID
-    var user = await User.findOne(username).populate("budgets");
+    const user = await User.findOne(username).populate("budgets");
     if (!user) {
-        return res.status(404).json({ message: 'User not found' });
+        return res.status(404).json({ message: 'User not found'});
     }
     // Send the retrieved user data as the response
     res.json(user);
 });
 
-router.get('/users/:username/expenses', async function (req, res) {
-    var username = req.params.username;
+router.get('/users/:username/expenses', authenticator, async function (req, res) {
+    const username = req.params.username;
         // Query the database to retrieve a user by ID
-        var user = await User.findOne().populate("expenses");
+        const user = await User.findOne(username).populate("expenses");
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }

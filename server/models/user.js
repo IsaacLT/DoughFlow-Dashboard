@@ -1,10 +1,9 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/';
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/';
+const db = mongoose.connect(mongoURI, {useNewUrlParser: true});
 
-var db = mongoose.connect(mongoURI, {useNewUrlParser: true});
-
-var userSchema = new Schema({
+const userSchema = new Schema({
     username : {
         type: String,
         required: true,
@@ -24,5 +23,5 @@ var userSchema = new Schema({
     }]
 });
 
-var User = mongoose.model('user', userSchema);
+const User = mongoose.model('user', userSchema);
 module.exports = User;
