@@ -422,18 +422,18 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/users/:{{invalid_username}}",
+							"raw": "{{host}}/users/:username",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"users",
-								":{{invalid_username}}"
+								":username"
 							],
 							"variable": [
 								{
-									"key": "{{invalid_username}}",
-									"value": ""
+									"key": "username",
+									"value": "invaliduser"
 								}
 							]
 						}
@@ -506,18 +506,18 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/users/:{{invalid_username}}",
+							"raw": "{{host}}/users/:username",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"users",
-								":{{invalid_username}}"
+								":username"
 							],
 							"variable": [
 								{
-									"key": "{{invalid_username}}",
-									"value": ""
+									"key": "username",
+									"value": "invaliduser"
 								}
 							]
 						}
