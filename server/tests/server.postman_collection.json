@@ -1,13 +1,13 @@
 {
 	"info": {
-		"_postman_id": "e54d388b-a7af-4d86-9a79-3c95b19f35a3",
+		"_postman_id": "3a1f8efa-9442-476a-9a60-24c12ae14cd9",
 		"name": "server",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "29410775"
+		"_exporter_id": "29410899"
 	},
 	"item": [
 		{
-			"name": "usertests",
+			"name": "Users",
 			"item": [
 				{
 					"name": "post",
@@ -1086,7 +1086,7 @@
 			]
 		},
 		{
-			"name": "categorytests",
+			"name": "Categories",
 			"item": [
 				{
 					"name": "get categories none created",
@@ -1454,7 +1454,7 @@
 			]
 		},
 		{
-			"name": "RelationshipTest",
+			"name": "User Expense Relationships",
 			"item": [
 				{
 					"name": "get all expenses invalid user",
@@ -1790,7 +1790,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"description\": \"Food\",\r\n    \"amount\": \"200\",\r\n    \"userId\": \"6502e6023e219e1e003eeae7\",\r\n    \"date\": 20230109,\r\n    \"budgetId\": \"6502e6023e219e1e003eeae1\"\r\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1874,7 +1874,7 @@
 			]
 		},
 		{
-			"name": "Budget tests",
+			"name": "Budgets",
 			"item": [
 				{
 					"name": "POST",
@@ -2598,6 +2598,255 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Category Expense Relationships",
+			"item": [
+				{
+					"name": "Post Category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"response = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"category_id\", response._id);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"categoryName\": \"Clothes\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/categories",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post expense from category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"response = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"expense_id\", response._id);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Food\",\r\n    \"amount\": 200,\r\n    \"date\": \"1970-01-01T05:37:10.109Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/categories/:id/expenses",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"categories",
+								":id",
+								"expenses"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{category_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all expenses by category",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/categories/:id/expenses",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"categories",
+								":id",
+								"expenses"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{category_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get specific expense from specific user Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Food\",\r\n    \"amount\": \"200\",\r\n    \"userId\": \"6502e6023e219e1e003eeae7\",\r\n    \"date\": 20230109,\r\n    \"budgetId\": \"6502e6023e219e1e003eeae1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/categories/:id/expenses/:expenseid",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"categories",
+								":id",
+								"expenses",
+								":expenseid"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{category_id}}"
+								},
+								{
+									"key": "expenseid",
+									"value": "{{expense_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete specific expense from",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/categories/:id/expenses/:expenseid",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"categories",
+								":id",
+								"expenses",
+								":expenseid"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{category_id}}"
+								},
+								{
+									"key": "expenseid",
+									"value": "{{expense_id}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
@@ -2625,6 +2874,14 @@
 			"key": "host",
 			"value": "http://localhost:3000",
 			"type": "string"
+		},
+		{
+			"key": "loginToken",
+			"value": "123"
+		},
+		{
+			"key": "access_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwidXNlcklkIjoiNjUwMDYxZjM0ZWNjNDA3MTRhM2JiZTZlIiwiaWF0IjoxNjk0NTI2MTA1LCJleHAiOjE2OTQ1MzMzMDV9.0OqVYVcjKl2Lt3yzXeTKRil9yNdqeyxDLqg0gR-xeLk"
 		}
 	]
 }

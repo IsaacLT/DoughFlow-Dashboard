@@ -11,7 +11,7 @@ var categorySchema = new Schema({
     }, 
     expenses : [{
         type: Schema.Types.ObjectId,
-        ref: "expense" 
+        ref: "expenseModel" 
     }]
 });
 
