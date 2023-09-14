@@ -15,7 +15,7 @@ const userSchema = new Schema({
     },
     expenses : [{
         type: Schema.Types.ObjectId,
-        ref: "expense"
+        ref: "expenseModel"
     }],
     budgets: [{
         type: Schema.Types.ObjectId,
