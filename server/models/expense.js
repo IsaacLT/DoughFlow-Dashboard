@@ -21,10 +21,10 @@ const expenseSchema = Schema({
         type: Date,
         required: true,
     },
-    budgetId: {
+    categoryId: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: "budget",
+        ref: "category",
     }
 
 });

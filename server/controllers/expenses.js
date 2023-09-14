@@ -48,7 +48,7 @@ router.get("/expenses/:id", async (req, res) => {
 //UPDATE: Update an expense record by ID
 router.put("/expenses/:id", async (req, res) => {
     try {
-        const updatedExpense = await expense.findByIdAndUpdate(req.params.id, req.body, {new:true});
+        const updatedExpense = await expense.findByIdAndUpdate(req.params.id, req.body, {new: true});
         if (!updatedExpense) {
             res.status(404).json({ error: "Expense not found" });
         } else {
@@ -58,6 +58,8 @@ router.put("/expenses/:id", async (req, res) => {
         res.status(500).json({ error: err.message })
     }
 });
+
+
 
 //PATCH: Update an expense record by ID
 router.patch("/expenses/:id", async (req, res) => {
@@ -101,6 +103,5 @@ router.delete("/expenses", async (req, res) => {
         }
     
 });
-  
 
 module.exports = router;
