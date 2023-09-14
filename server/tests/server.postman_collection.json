@@ -920,6 +920,258 @@
 					"response": []
 				},
 				{
+					"name": "CREATE (POST) 2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"response = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"expenseId\", response._id);\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function (){\r",
+									"    pm.response.to.have.status(201);\r",
+									"    \r",
+									"});\r",
+									"\r",
+									"pm.test(\"Attribute name is part of Expense entity\", function(){\r",
+									"    pm.response.to.be.json;\r",
+									"    pm.expect(pm.response.json()).to.have.property(\"amount\");\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Test Expense2\",\r\n    \"amount\": 40.0,\r\n    \"userId\": \"5f5b6a4b2e35a41c6c4624ab\", \r\n    \"date\": \"2023-05-11\", \r\n    \"categoryId\": \"5f5b6a4b2e35a41c6c4624ac\" \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/expenses",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"expenses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE (POST) 3",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"response = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"expenseId\", response._id);\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function (){\r",
+									"    pm.response.to.have.status(201);\r",
+									"    \r",
+									"});\r",
+									"\r",
+									"pm.test(\"Attribute name is part of Expense entity\", function(){\r",
+									"    pm.response.to.be.json;\r",
+									"    pm.expect(pm.response.json()).to.have.property(\"amount\");\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Test Expense3\",\r\n    \"amount\": 60.0,\r\n    \"userId\": \"5f5b6a4b2e35a41c6c4624ab\", \r\n    \"date\": \"2023-06-09\", \r\n    \"categoryId\": \"5f5b6a4b2e35a41c6c4624ac\" \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/expenses",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"expenses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE (POST) 4",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"response = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"expenseId\", response._id);\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function (){\r",
+									"    pm.response.to.have.status(201);\r",
+									"    \r",
+									"});\r",
+									"\r",
+									"pm.test(\"Attribute name is part of Expense entity\", function(){\r",
+									"    pm.response.to.be.json;\r",
+									"    pm.expect(pm.response.json()).to.have.property(\"amount\");\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Test Expense4\",\r\n    \"amount\": 80.0,\r\n    \"userId\": \"5f5b6a4b2e35a41c6c4624ab\", \r\n    \"date\": \"2023-09-30\", \r\n    \"categoryId\": \"5f5b6a4b2e35a41c6c4624ac\" \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/expenses",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"expenses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test sorting (ascending) and filtering",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"startDate\": \"2023-07-01\",\r\n  \"endDate\": \"2023-12-31\",\r\n  \"order\": \"desc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/expenses/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"expenses",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test sorting (descending) and filtering",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"startDate\": \"2023-06-01\",\r\n  \"endDate\": \"2023-12-31\",\r\n  \"order\": \"asc\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/expenses/",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"expenses",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "DELETE (DELETE - Single Expense by ID)",
 					"event": [
 						{
