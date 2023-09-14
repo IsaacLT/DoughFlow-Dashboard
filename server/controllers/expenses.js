@@ -17,7 +17,26 @@ router.post("/expenses", async (req, res) => {
 //READ: Get all expenses
 router.get("/expenses", async (req, res) => {
     try {
-        const expenses = await expense.find({});
+        const filters = {};
+        const sorting = {};
+        let ascOrDesc = 1;
+        if (req.body.startDate && req.body.endDate) {
+            filters.date = {
+                $gte: new Date(req.body.startDate),
+                $lte: new Date(req.body.endDate),
+            };
+        }
+        sorting.amount;
+        if (req.body.order === "asc") {
+            ascOrDesc = 1
+        } else {
+            ascOrDesc = -1
+        }
+        const expenses = await expense
+            .find(filters)
+            .sort({amount : ascOrDesc})
+            .exec();
+
         if(expenses.length === 0){
             res.status(404).json({ error: "No expenses found" });
         } else {

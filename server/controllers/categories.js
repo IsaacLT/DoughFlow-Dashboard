@@ -119,7 +119,7 @@ router.delete('/categories/:id/expenses/:expenseid', async function (req, res) {
     if (!category) {
         return res.status(404).json({ message: 'Category not found' });
     }
-    // Find the expense by its ID and ensure it belongs to the user
+    // Find the expense by its ID and ensure it belongs to the category
     const expense = await Expense.findOne({ _id: expenseId, categoryId: category._id });
     if (!expense) {
         return res.status(404).json({ message: 'Expense not found', categoryId, expenseId});
