@@ -5,16 +5,19 @@ var Budget = require('../models/budget');
 
 // Create a new budget instance
 router.post('/budgets', async (req,res) => {                              
-        var budget = new Budget(req.body);      
-        await budget.save()                     // Save the budget
-        res.json(budget);                       // Send the created budget as the response
-    
+        if (!req.body.name || isNaN(req.body.amount) || req.body.amount <= 0) {         // Check if budget has name and amount. ("NaN" = not a number)
+            return res.status(400).json({ error: 'Invalid budget properties'})
+        } else {
+            var budget = new Budget(req.body);  
+            await budget.save()                     // Save the budget
+            res.json(budget);                       // Send the created budget as the response
+        } 
 });
 
 // Get all budgets
 router.get('/budgets', async (req,res) => {
     var budgets = await Budget.find({});        // Query the database to get all budgets
-    if (!budgets) {                             // If no budgets exist, respond with object not found error
+    if (budgets.length == 0) {                             // If no budgets exist, respond with object not found error
         return res.status(404).json({error: 'No budgets exist.'})
     } else {
     res.json(budgets);                          // Send the retrieved budgets as the respose
@@ -33,15 +36,19 @@ router.get('/budgets/:id', async (req, res) => {
 
 // Update all budget attributes (PUT)
 router.put('/budgets/:id', async (req, res) => {
-    var updatedBudget = await Budget.findByIdAndUpdate(
-        req.params.id,      // Identify the budget yo update it by its unique id
-        req.body,           // Contains the updated data for the budget
-        {new: true}         // Contans the budget with all the changes made during the update. If not implemented, the updatedBudget variable would not reflect the changes made.
-    );
-    if (!updatedBudget) {
-        return res.status(404).json({ error: 'Budget not found'});
+    if (!req.body.name || isNaN(req.body.amount) || req.body.amount <= 0) {         // Check if budget has name and amount. ("NaN" = not a number)
+        return res.status(400).json({ error: 'Invalid budget properties'})
     } else {
-        res.json(updatedBudget);
+        var updatedBudget = await Budget.findByIdAndUpdate(
+            req.params.id,      // Identify the budget to update it by its unique id
+            req.body,           // Contains the updated data for the budget
+            {new: true}         // Contans the budget with all the changes made during the update. If not implemented, the updatedBudget variable would not reflect the changes made.
+        );
+        if (!updatedBudget) {
+            return res.status(404).json({ error: 'Budget not found'});
+        } else {
+            res.json(updatedBudget);
+        }
     }
 });
 
