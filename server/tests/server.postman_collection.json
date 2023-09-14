@@ -262,52 +262,6 @@
 					"response": []
 				},
 				{
-					"name": "ERROR UPDATE (PUT)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 500\", function(){\r",
-									"    pm.response.to.have.status(500);\r",
-									"})"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"description\": \"Updated Test Expense\",\r\n  \"amount\": 75,\r\n  \"userId\": \"5f5b6a4b2e35a41c6c4624ad\", // Updated user ID\r\n  \"date\": \"2023-09-15T14:30:00.000Z\", // Updated date and time\r\n  \"categoryId\": \"5f5b6a4b2e35a41c6c4624ad\", // Updated budget ID\r\n  \"__v\": 1 // Incremented the version number\r\n}\r\n\r\n",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{host}}/expenses/:id",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"expenses",
-								":id"
-							],
-							"variable": [
-								{
-									"key": "id",
-									"value": "6501b9b88dd43022fe39998"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "UPDATE(PUT-Update all attributes)",
 					"event": [
 						{
