@@ -6,6 +6,8 @@ var cors = require('cors');
 var history = require('connect-history-api-fallback');
 var userRouter = require('./controllers/users');
 var categoryRouter = require('./controllers/categories');
+var expenseRouter = require('./controllers/expenses');
+
 
 // Variables
 var mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/';
@@ -31,6 +33,7 @@ app.use(morgan('dev'));
 // Enable cross-origin resource sharing for frontend must be registered before api
 app.options('*', cors());
 app.use(cors());
+app.use(expenseRouter);
 app.use(userRouter);
 app.use(categoryRouter);
 
