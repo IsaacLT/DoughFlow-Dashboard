@@ -4,10 +4,16 @@ var morgan = require('morgan');
 var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
-var budgetRouter = require('./controllers/budgets')
 
 // Variables
-var mongoURI = process.env.MONGODB_URI || 'mongodb://0.0.0.0:27017/';
+var userRouter = require('./controllers/users');
+var categoryRouter = require('./controllers/categories');
+var expenseRouter = require('./controllers/expenses');
+var budgetRouter = require('./controllers/budgets');
+
+
+// Variables
+var mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/';
 var port = process.env.PORT || 3000;
 
 // Connect to MongoDB
@@ -31,6 +37,9 @@ app.use(morgan('dev'));
 app.options('*', cors());
 app.use(cors());
 app.use(budgetRouter);
+app.use(userRouter);
+app.use(expenseRouter);
+app.use(categoryRouter);
 
 // Import routes
 app.get('/api', function(req, res) {

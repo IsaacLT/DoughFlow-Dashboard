@@ -67,12 +67,15 @@ Our system is a financial management tool. Users can log individual expenses, up
 
 ### Pages
 
-* Home: 1-3 sentences describing what the page displays and what a user can do
-* Shopping cart: ...
+* **Login page:** page for user to log in to their created account, alternatively for creating a new accouunt.
+
+* **Dashboard page:** Once the user has signed in to thier account, the dashboard will be displayed. The dashboard is used for navigating through the web application and will display your current budget and expenses. Additionally the user can register an expence directly through the dashboard.
+
+* **Budget Management page:** The budget management page lets the user select between different budgets and see details on the economic status of each category connected to that specific budget. The user can also create new budgets from this page. 
 
 ### Entity-Relationship (ER) Diagram
 
-![ER Diagram](./images/er_diagram.png)
+![ER Diagram](./images/ER_diagram_Doughflow_Dashboard.png)
 
 ## Teaser (MS3)
 
