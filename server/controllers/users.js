@@ -97,7 +97,7 @@ router.post('/users/:username/expenses', authenticator, async function (req, res
             amount: req.body.amount,
             userId: user._id,
             date: req.body.date,
-            budgetId: req.body.budgetId
+            categoryId: req.body.categoryId
         });
         // Save the new expense
         await newExpense.save();
