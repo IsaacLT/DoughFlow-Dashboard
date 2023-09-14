@@ -4,9 +4,12 @@ var morgan = require('morgan');
 var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
+
+// Variables
 var userRouter = require('./controllers/users');
 var categoryRouter = require('./controllers/categories');
 var expenseRouter = require('./controllers/expenses');
+var budgetRouter = require('./controllers/budgets');
 
 
 // Variables
@@ -33,6 +36,7 @@ app.use(morgan('dev'));
 // Enable cross-origin resource sharing for frontend must be registered before api
 app.options('*', cors());
 app.use(cors());
+app.use(budgetRouter);
 app.use(userRouter);
 app.use(expenseRouter);
 app.use(categoryRouter);
