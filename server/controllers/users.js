@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require('../models/user');
 const Expense = require('../models/expense');
+const Budget = require('../models/budget');
 const jwt = require('jsonwebtoken');
 const authenticator = require('../authenticator');
 const config = require('../config');
@@ -145,10 +146,78 @@ router.delete('/users/:username/expenses/:id', authenticator, async function (re
     // Find the expense by its ID and ensure it belongs to the user
     const expense = await Expense.findOne({ _id: expenseId, userId: user._id });
     if (!expense) {
-        return res.status(404).json({ message: 'Expense not found'});
+        return res.status(404).json({ message: 'Budget not found'});
     }
     await Expense.deleteOne(expense);
     res.json({message: 'Expense deleted succesfully', expense});
+});
+//////////////////////////////////////////////////////////////////////////////////
+
+
+router.post('/users/:username/budgets', authenticator, async function (req, res) {
+    const username = req.params.username;
+        // Find the user by username
+    const user = await User.findOne({ username });
+
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+        }
+        // Create a new expense based on the request body
+        const newBudget = new Budget({
+            name: req.body.name,
+            amount: req.body.amount,
+            user: user._id,
+        });
+        // Save the new expense
+        await newBudget.save();
+        // Add the new expense to the user's expenses array
+        user.budgets.push(newBudget);
+        await user.save();
+        res.json(newBudget);
+});
+
+router.get('/users/:username/budgets', authenticator, async function (req, res) {
+    const username = req.params.username;
+        // Query the database to retrieve a user by ID
+        const user = await User.findOne({ username }).populate("budgets");
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        // Send the retrieved user data as the response
+        res.json(user);
+});
+
+router.get('/users/:username/budgets/:id', authenticator, async function (req, res) {
+    const username = req.params.username;
+    const budgetId = req.params.id;
+    // Find the user by username
+    const user = await User.findOne({ username });
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+    // Find the expense by its ID and ensure it belongs to the user
+    const budget = await Budget.findOne({ _id: budgetId, user: user._id });
+    if (!budget) {
+        return res.status(404).json({ message: 'Budget not found'});
+    }
+    res.json(budget);
+});
+
+router.delete('/users/:username/budgets/:id', authenticator, async function (req, res) {
+    const username = req.params.username;
+    const budgetId = req.params.id;
+    // Find the user by username
+    const user = await User.findOne({ username });
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+    // Find the expense by its ID and ensure it belongs to the user
+    const budget = await Budget.findOne({ _id: budgetId, user: user._id });
+    if (!budget) {
+        return res.status(404).json({ message: 'Budget not found'});
+    }
+    await Expense.deleteOne(budget);
+    res.json({message: 'Budget deleted succesfully', budget});
 });
 
 module.exports = router;
