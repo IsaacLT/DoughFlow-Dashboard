@@ -110,13 +110,39 @@ router.post('/users/:username/expenses', authenticator, async function (req, res
 
 router.get('/users/:username/expenses', authenticator, async function (req, res) {
     const username = req.params.username;
-        // Query the database to retrieve a user by ID
+        // Query the database to retrieve a user by username
         const user = await User.findOne({ username }).populate("expenses");
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
+        //variables for filtering and sorting a users expenses
+        const filters = {};
+        const sorting = {};
+        //if there are start and end dates add them to filters array
+        if (req.query.startDate && req.query.endDate) {
+            filters.date = {
+                $gte: new Date(req.query.startDate),
+                $lte: new Date(req.query.endDate),
+            };
+        }
+        
+        if (req.query.order === "asc") {
+            sorting.amount = 1;
+        } else if (req.query.order === "desc") {
+            sorting.amount = -1;
+        }
+
+        const expenses = user.expenses
+        .filter((expense) => {
+            if (!filters.date) return true;
+            const expenseDate = new Date(expense.date);
+            return expenseDate >= filters.date.$gte && expenseDate <= filters.date.$lte;
+        })
+        .sort((a, b) => (a.amount - b.amount) * sorting.amount);
+
+        // Send the filtered and sorted expenses as the response
         // Send the retrieved user data as the response
-        res.json(user);
+        res.json(expenses);
 });
 
 router.get('/users/:username/expenses/:id', authenticator, async function (req, res) {
