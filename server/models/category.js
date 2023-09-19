@@ -9,6 +9,10 @@ var categorySchema = new Schema({
         type : String,
         required : true
     }, 
+    budgetId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "budget",
+    },
     expenses : [{
         type: Schema.Types.ObjectId,
         ref: "expenseModel" 

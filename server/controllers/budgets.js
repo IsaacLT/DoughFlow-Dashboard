@@ -89,11 +89,12 @@ router.delete('/budgets/:id', async (req, res) => {
 // Post operation for endpoint budget/:id/categories
 router.post('/budgets/:id/categories', async (req, res) => {
     const budgetId = req.params.id;
-    const budget = await budget.findById(budgetId);     // Find the category by Id
+    const budget = await Budget.findById(budgetId);     // Find the category by Id
     if (!budget) {
          return res.status(404).json({ error: 'Budget not found' });
     } 
     const newCategory = new Category(req.body);         // Create a new category based on the request body
+    newCategory.budgetId = budget._id;                  // Assign budgetId to the new category
     await newCategory.save();                           // Save the new category
     budget.categories.push(newCategory);                // Add the new expense to the user's expenses array
     await budget.save();                                // Save budget
@@ -101,7 +102,7 @@ router.post('/budgets/:id/categories', async (req, res) => {
 });
 
 // Get operation for endpoint budget/:id/categories
-router.get('budgets/:id/categories', async (req, res) => {
+router.get('/budgets/:id/categories', async (req, res) => {
     const budgetId = req.params.id;
     const budget = await Budget.findById(budgetId).populate("categories");       // Query the database to retrieve a budget by ID
     if (!budget) {
@@ -112,9 +113,9 @@ router.get('budgets/:id/categories', async (req, res) => {
 });
 
 // Get operation for endpoint budget/:id/categories/:id
-router.get('budgets/:id/categories/:categoryid', async (req, res) => {
+router.get('/budgets/:id/categories/:categoryId', async (req, res) => {
     const budgetId = req.params.id;
-    const categoryId = req.params.categoryid;
+    const categoryId = req.params.categoryId;
     const budget = await Budget.findById(budgetId);
     if (!budget) {
         return res.status(404).json({ error: 'Budget not found' });
@@ -128,9 +129,9 @@ router.get('budgets/:id/categories/:categoryid', async (req, res) => {
 });
 
 // Delete operation for endpoint budget/:id/categories/:id
-router.delete('/budgets/:id/categories/:categoryid', async (req, res) => {
+router.delete('/budgets/:id/categories/:categoryId', async (req, res) => {
     const budgetId = req.params.id;
-    const categoryId = req.params.expenseid;
+    const categoryId = req.params.categoryId;
     const budget = await Budget.findById(budgetId);
     if (!budget) {
         return res.status(404).json({ error: 'Budget not found' });
