@@ -66,7 +66,7 @@ export default {
   position: relative;
   max-width: 430px;
   width: 100%;
-  height: 400px;
+  height: 380px;
   background: #fff;
   padding: 35px;
   box-shadow: 5px 5px 8px;
