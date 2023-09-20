@@ -1,14 +1,15 @@
 // Import required dependencies
-var express = require('express');
-var router = express.Router();
-var Budget = require('../models/budget');
+const express = require('express');
+const router = express.Router();
+const Budget = require('../models/budget');
+const Category = require('../models/category');
 
 // Create a new budget instance
 router.post('/budgets', async (req,res) => {                              
         if (!req.body.name || isNaN(req.body.amount) || req.body.amount <= 0) {         // Check if budget has name and amount. ("NaN" = not a number)
             return res.status(400).json({ error: 'Invalid budget properties'})
         } else {
-            var budget = new Budget(req.body);  
+            const budget = new Budget(req.body);  
             await budget.save()                     // Save the budget
             res.json(budget);                       // Send the created budget as the response
         } 
@@ -16,17 +17,17 @@ router.post('/budgets', async (req,res) => {
 
 // Get all budgets
 router.get('/budgets', async (req,res) => {
-    var budgets = await Budget.find({});        // Query the database to get all budgets
-    if (budgets.length == 0) {                             // If no budgets exist, respond with object not found error
+    const budgets = await Budget.find({});        // Query the database to get all budgets
+    if (budgets.length == 0) {                    // If no budgets exist, respond with object not found error
         return res.status(404).json({error: 'No budgets exist.'})
     } else {
-    res.json(budgets);                          // Send the retrieved budgets as the respose
+    res.json(budgets);                            // Send the retrieved budgets as the respose
     }
 });
 
 // Get a budget instance
 router.get('/budgets/:id', async (req, res) => {
-    var budget = await Budget.findById(req.params.id);      // Request id from URL parameters
+    const budget = await Budget.findById(req.params.id);    // Request id from URL parameters
     if (!budget) {                                          // If no budget exists, respond with object not found error
         return res.status(404).json({ error: 'Budget not found'});
     } else {
@@ -39,7 +40,7 @@ router.put('/budgets/:id', async (req, res) => {
     if (!req.body.name || isNaN(req.body.amount) || req.body.amount <= 0) {         // Check if budget has name and amount. ("NaN" = not a number)
         return res.status(400).json({ error: 'Invalid budget properties'})
     } else {
-        var updatedBudget = await Budget.findByIdAndUpdate(
+        const updatedBudget = await Budget.findByIdAndUpdate(
             req.params.id,      // Identify the budget to update it by its unique id
             req.body,           // Contains the updated data for the budget
             {new: true}         // Contans the budget with all the changes made during the update. If not implemented, the updatedBudget variable would not reflect the changes made.
@@ -54,22 +55,22 @@ router.put('/budgets/:id', async (req, res) => {
 
 // Partially update a budget instance (PATCH)
 router.patch('/budgets/:id', async (req, res) => {
-    var budget = await Budget.findById(req.params.id);
+    const budget = await Budget.findById(req.params.id);
     if (!budget) {
         return res.status(404).json({ error: 'Budget not found'});
     } else {                                                 // If 'req.body.property' is falsy such as 'null', 'undefined' or an empty string, 
         budget.name = req.body.name || budget.name;          // the existing values from the budget object will be used. Ensures that existing values are preserved
         budget.amount = req.body.amount || budget.amount;    // when the corresponding properties are not provided in the request body.
-        budget = await budget.save();
+        await budget.save();
         res.json(budget);
     }
 });
 
 // Delete all budgets
 router.delete('/budgets', async (req, res) => {
-    var result = await Budget.deleteMany({});       // {} matches all objects in the Budget collection
+    const result = await Budget.deleteMany({});       // {} matches all objects in the Budget collection
     if (!result.deletedCount) {
-        return res.status(404).json({ error: 'No budgets found'});
+        return res.status(404).json({ error: 'Budget not found'});
     } else {
         res.json({ message: `Deleted ${result.deletedCount} budgets`});
     }
@@ -77,12 +78,73 @@ router.delete('/budgets', async (req, res) => {
 
 // Delete a budget instance
 router.delete('/budgets/:id', async (req, res) => {
-    var deletedBudget = await Budget.findByIdAndDelete(req.params.id);
+    const deletedBudget = await Budget.findByIdAndDelete(req.params.id);
     if (!deletedBudget) {
         return res.status(404).json({ error: 'Budget not found'});
     } else {
         res.json(deletedBudget);
     }
 });
+
+// Post operation for endpoint budget/:id/categories
+router.post('/budgets/:id/categories', async (req, res) => {
+    const budgetId = req.params.id;
+    const budget = await Budget.findById(budgetId);     // Find the category by Id
+    if (!budget) {
+         return res.status(404).json({ error: 'Budget not found' });
+    } 
+    const newCategory = new Category(req.body);         // Create a new category based on the request body
+    newCategory.budgetId = budget._id;                  // Assign budgetId to the new category
+    await newCategory.save();                           // Save the new category
+    budget.categories.push(newCategory);                // Add the new expense to the user's expenses array
+    await budget.save();                                // Save budget
+    res.json(newCategory);
+});
+
+// Get operation for endpoint budget/:id/categories
+router.get('/budgets/:id/categories', async (req, res) => {
+    const budgetId = req.params.id;
+    const budget = await Budget.findById(budgetId).populate("categories");       // Query the database to retrieve a budget by ID
+    if (!budget) {
+        return res.status(404).json({ error: 'Budget not found' });
+    }
+    // Send the retrieved user data as the response
+    res.json(budget);
+});
+
+// Get operation for endpoint budget/:id/categories/:id
+router.get('/budgets/:id/categories/:categoryId', async (req, res) => {
+    const budgetId = req.params.id;
+    const categoryId = req.params.categoryId;
+    const budget = await Budget.findById(budgetId);
+    if (!budget) {
+        return res.status(404).json({ error: 'Budget not found' });
+    }
+    // Find the category by its ID and ensure it belongs to the budget
+    const category = await Category.findOne({ _id: categoryId, budgetId: budget._id });
+    if (!category) {
+        return res.status(404).json({ error: 'Category not found', categoryId, budget});
+    }
+    res.json(category);
+});
+
+// Delete operation for endpoint budget/:id/categories/:id
+router.delete('/budgets/:id/categories/:categoryId', async (req, res) => {
+    const budgetId = req.params.id;
+    const categoryId = req.params.categoryId;
+    const budget = await Budget.findById(budgetId);
+    if (!budget) {
+        return res.status(404).json({ error: 'Budget not found' });
+    }
+    // Find the category by its ID and ensure it belongs to the budget
+    const category = await Category.findOne({ _id: categoryId, budgetId: budget._id });
+    if (!category) {
+        return res.status(404).json({ error: 'Category not found', categoryId, budget});
+    }
+    await Category.deleteOne(category);
+    res.json({message: 'Category deleted succesfully', category});
+});
+
+
 
 module.exports = router;

@@ -1,12 +1,12 @@
 // Import mongoose
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 // Connect to MongoDB
-var mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/';
-var db = mongoose.connect( mongoURI, {useNewUrlParser: true});
+const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/';
+const db = mongoose.connect( mongoURI, {useNewUrlParser: true});
 
 // Create schema for budget entity
-var budget = new mongoose.Schema({
+const budgetSchema = new mongoose.Schema({
 
     // Budget name
     name: {
@@ -23,11 +23,11 @@ var budget = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user'
     },
-    // Reference to the expense model
+    // Reference to the category model
     categories: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'category' 
     }]
 });
 
-module.exports = mongoose.model('budget', budget);
+module.exports = mongoose.model('budget', budgetSchema);
