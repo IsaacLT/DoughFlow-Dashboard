@@ -5,9 +5,11 @@
       <h2>Login</h2>
       <form action="#">
         <div class="input-box">
+          <font-awesome-icon id ="userIcon" icon="fa-user"/>
           <input type="text" v-model="username" placeholder="Enter username" required/>
         </div>
         <div class="input-box">
+          <font-awesome-icon id ="lockIcon" icon="fa-lock"/>
           <input type="password" v-model="password" placeholder="Enter password" required/>
         </div>
         <div class="input-box button">
@@ -38,7 +40,7 @@ export default {
         password: this.password
       })
       if (result.status === 200) {
-        alert('Login Succesful!')
+        this.$router.push({ name: 'home' })
       } else if (result.status === 404) {
         alert('User not found')
       } else if (result.status === 401) {
@@ -101,6 +103,7 @@ form .input-box input {
   padding: 0 15px;
   font-size: 17px;
   font-weight: 400;
+  padding-left: 30px;
   color: #333;
   border: 1.5px solid #ada3a3;
   border-bottom-width: 2.5px;
@@ -120,5 +123,20 @@ form .input-box input {
 }
 .input-box.button input:hover {
   background: #003557;
+}
+
+#userIcon {
+  position: absolute;
+  left: 45px;
+  top: 32%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+#lockIcon {
+  position: absolute;
+  left: 45px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
 }
 </style>
