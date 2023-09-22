@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/">Home</router-link>
+      <router-link to="/">DoughFlow Dashboard</router-link>
     </div>
     <!-- Render the content of the current page view -->
     <router-view/>
@@ -15,5 +15,6 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  background-color: #7fc9ff;
 }
 </style>
