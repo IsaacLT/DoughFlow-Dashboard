@@ -13,7 +13,7 @@
             <!-- Box 1 -->
             <div class="col-md-4">
               <div class="card">
-                <div class="card-body">
+                <div class="card-body register-expense">
                   <!-- Title-->
                   <h5>Register Expense</h5>
                   <div class="form-group">
@@ -54,9 +54,9 @@
           <div class="row mt-4">
             <!-- Box 4 -->
             <div class="col-md-4">
-              <div class="card">
-                <div class="card-body">
-                  Manage budgets
+              <div class="card clickable-box" @click="switchToBudgets">
+                <div class="card-body text-center manage-budgets">
+                  <h5>Manage Budgets</h5>
                 </div>
               </div>
             </div>
@@ -83,7 +83,12 @@
 </template>
 <script>
 export default {
-  name: 'Dashboard'
+  name: 'Dashboard',
+  methods: {
+    switchToBudgets() {
+      this.$router.push('/manage-budgets')
+    }
+  }
 }
 </script>
 <style scoped>
@@ -95,6 +100,21 @@ export default {
   .card {
   min-height: 200px;
   }
+  .register-expense {
+    box-shadow: 5px 5px 8px;
+    border-radius: 6px;
+  }
+  .manage-budgets {
+    text-decoration: underline;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    box-shadow: 5px 5px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .manage-budgets:hover {
+    box-shadow: 8px 8px 10px;
+  }
   </style>
-  This Vue component creates a simple grid layout with six boxes using Bootstrap classes. Each box is represented as a Bootstrap card with a placeholder "Box X" text. You can replace the content of each box with your actual content and functionality as needed.
-  Please note that this is a basic layout, and you can customize the styles, content, and functionality of each box to match your project's requirements and design.
