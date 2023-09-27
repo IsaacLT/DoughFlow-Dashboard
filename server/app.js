@@ -5,12 +5,9 @@ var path = require('path');
 var cors = require('cors');
 var history = require('connect-history-api-fallback');
 
-// Variables
-var userRouter = require('./controllers/users');
-var categoryRouter = require('./controllers/categories');
-var expenseRouter = require('./controllers/expenses');
-var budgetRouter = require('./controllers/budgets');
 
+// Variables
+const mainRouter = require('./controllers/mainRouter');
 
 // Variables
 var mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/';
@@ -36,11 +33,7 @@ app.use(morgan('dev'));
 // Enable cross-origin resource sharing for frontend must be registered before api
 app.options('*', cors());
 app.use(cors());
-app.use(budgetRouter);
-app.use(userRouter);
-app.use(expenseRouter);
-app.use(categoryRouter);
-
+app.use(mainRouter);
 // Import routes
 app.get('/api', function(req, res) {
     res.json({'message': 'Welcome to your DIT342 backend ExpressJS project!'});

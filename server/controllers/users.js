@@ -6,7 +6,8 @@ const Budget = require('../models/budget');
 const jwt = require('jsonwebtoken');
 const authenticator = require('../authenticator');
 const config = require('../config');
-
+var methodOverride = require('method-override');
+router.use(methodOverride("X-HTTP-Method-Override"));
 
 router.post('/login', async function (req, res) {
     const username = req.body.username;
