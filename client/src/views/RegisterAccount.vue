@@ -1,30 +1,39 @@
 <template>
   <div class="fullPage">
-    <img class="logo" src="../assets/logo.png" />
-    <div class="fullForm">
-        <h2>Register Account</h2>
-        <form action="#">
-          <div class="input-box">
-            <font-awesome-icon id ="userIcon" icon="fa-user"/>
-            <input type="text" v-model="username" placeholder="Enter username" required/>
-          </div>
-          <div class="input-box">
-            <font-awesome-icon id ="lockIcon" icon="fa-lock"/>
-            <input type="password" v-model="password" placeholder="Enter password" required/>
-          </div>
-          <div class="input-box button">
-            <input type="submit" v-on:click="createAccount" value="Create Account"/>
-          </div>
-          <div class="text">
-            <h3>Already have an account? <a href="login">Login</a></h3>
-          </div>
+    <div class="container d-flex align-items-center justify-content-center min-vh-100">
+      <div class="row">
+        <div class="col-md-6 order-2 order-md-1">
+          <div class="fullForm card p-4">
+            <h2 class="mb-4">Register Account</h2>
+      <form @submit.prevent="createAccount">
+        <div class="input-box mb-3 position-relative">
+          <input class="form-control ps-5" type="text" v-model="username" placeholder="Enter username" required />
+          <i class="bi bi-person position-absolute top-50 start-0 translate-middle-y ms-2"></i>
+        </div>
+        <div class="input-box mb-3 position-relative">
+          <input class="form-control ps-5" type="password" v-model="password" placeholder="Enter password" required />
+          <i class="bi bi-lock position-absolute top-50 start-0 translate-middle-y ms-2"></i>
+        </div>
+        <div class="input-box mb-3">
+          <input class="btn btn-primary w-100" type="submit" value="Register" />
+        </div>
+        <div class="text-center">
+          <h3>Already have an account? <a href="login">Login</a></h3>
+        </div>
+        <Toast ref="toast" :toastMessage="toastMessage" :showToast="showToast" />
       </form>
+          </div>
+        </div>
+        <div class="col-md-6 order-1 order-md-2 mb-3 mb-md-0">
+          <img class="logo img-fluid mx-auto d-block" src="../assets/logo.png" alt="Logo" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
-
 <script>
 import axios from 'axios'
+import Toast from '@/components/Toast'
 
 export default {
   name: 'CreateAccount',
@@ -34,107 +43,28 @@ export default {
       password: ''
     }
   },
+  components: {
+    Toast
+  },
   methods: {
     async createAccount() {
-      const result = await axios.post('http://localhost:3000/users', {
+      await axios.post('http://localhost:3000/users', {
         username: this.username,
         password: this.password
       })
-      if (result.status === 200) {
-        alert('Account created!')
-      }
+        .then((response) => {
+          if (response.status === 200) {
+            this.$router.push({ name: 'login' })
+          }
+        })
+        .catch((error) => {
+          if (error.response) {
+            if (error.response.status === 400) {
+              this.$refs.toast.showToast('Register Error', 'User already exists')
+            }
+          }
+        })
     }
   }
 }
 </script>
-
-<style scoped>
-.fullPage {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #7fc9ff;
-}
-.logo {
-  max-width: 600px;
-  width: 100%;
-  max-height: 600px;
-  height: 100%;
-  padding: 50px;
-}
-.fullForm {
-
-  position: relative;
-  max-width: 430px;
-  width: 100%;
-  height: 380px;
-  background: #fff;
-  padding: 35px;
-  box-shadow: 5px 5px 8px;
-  border-radius: 6px;
-}
-.fullForm h2 {
-  position: relative;
-  font-size: 30px;
-  font-weight: 600;
-  color: #333;
-}
-
-.fullForm h3 {
-  position: relative;
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-}
-.fullForm form {
-  margin-top: 25px;
-
-}
-.fullForm form .input-box {
-  height: 52px;
-  margin: 18px 0;
-}
-form .input-box input {
-  height: 100%;
-  width:100%;
-  outline: none;
-  padding: 0 15px;
-  font-size: 17px;
-  font-weight: 400;
-  padding-left: 30px;
-  color: #333;
-  border: 1.5px solid #ada3a3;
-  border-bottom-width: 2.5px;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-}
-.input-box input:focus,
-.input-box input:valid {
-  border-color: #0082d3;
-}
-.input-box.button input {
-  color: #fff;
-  letter-spacing: 1px;
-  border: none;
-  background: #0082d3;
-  cursor: pointer;
-}
-.input-box.button input:hover {
-  background: #003557;
-}
-#userIcon {
-  position: absolute;
-  left: 45px;
-  top: 32%;
-  transform: translateY(-50%);
-  z-index: 1;
-}
-#lockIcon {
-  position: absolute;
-  left: 45px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 1;
-}
-</style>

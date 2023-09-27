@@ -1,142 +1,75 @@
 <template>
   <div class="fullPage">
-    <img class="logo" src="../assets/logo.png" />
-    <div class="fullForm">
-      <h2>Login</h2>
-      <form action="#">
-        <div class="input-box">
-          <font-awesome-icon id ="userIcon" icon="fa-user"/>
-          <input type="text" v-model="username" placeholder="Enter username" required/>
+    <div class="container d-flex align-items-center justify-content-center min-vh-100">
+      <div class="row">
+        <div class="col-md-6 order-2 order-md-1">
+          <div class="fullForm card p-4">
+            <h2 class="mb-4">Login</h2>
+      <form @submit.prevent="login">
+        <div class="input-box mb-3 position-relative">
+          <input class="form-control ps-5" type="text" v-model="username" placeholder="Enter username" required />
+          <i class="bi bi-person position-absolute top-50 start-0 translate-middle-y ms-2"></i>
         </div>
-        <div class="input-box">
-          <font-awesome-icon id ="lockIcon" icon="fa-lock"/>
-          <input type="password" v-model="password" placeholder="Enter password" required/>
+        <div class="input-box mb-3 position-relative">
+          <input class="form-control ps-5" type="password" v-model="password" placeholder="Enter password" required />
+          <i class="bi bi-lock position-absolute top-50 start-0 translate-middle-y ms-2"></i>
         </div>
-        <div class="input-box button">
-          <input type="submit" v-on:click="login" value="Login"/>
+        <div class="input-box mb-3">
+          <input class="btn btn-primary w-100" type="submit" value="Login" />
         </div>
-        <div class="text">
-            <h3>Don't have an account? <a href="register">Register</a></h3>
-          </div>
+        <div class="text-center">
+          <h3>Don't have an account? <a href="register">Register</a></h3>
+        </div>
+        <Toast ref="toast" :toastMessage="toastMessage" :showToast="showToast" />
       </form>
+          </div>
+        </div>
+        <div class="col-md-6 order-1 order-md-2 mb-3 mb-md-0">
+          <img class="logo img-fluid mx-auto d-block" src="../assets/logo.png" alt="Logo" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 <script>
 import axios from 'axios'
+import Toast from '@/components/Toast'
 
 export default {
   name: 'login',
   data() {
     return {
       username: '',
-      password: ''
+      password: '',
+      toastMessage: '',
+      showToast: false
     }
+  },
+  components: {
+    Toast
   },
   methods: {
     async login() {
-      const result = await axios.post('http://localhost:3000/login', {
+      await axios.post('http://localhost:3000/login', {
         username: this.username,
         password: this.password
       })
-      if (result.status === 200) {
-        this.$router.push({ name: 'home' })
-      } else if (result.status === 404) {
-        alert('User not found')
-      } else if (result.status === 401) {
-        alert('Invalid password')
-      }
+        .then((response) => {
+          if (response.status === 200) {
+            localStorage.setItem('token', response.data.token)
+            if (this.$route.path !== '/') this.$router.push({ name: 'home' })
+          }
+        })
+        .catch((error) => {
+          if (error.response) {
+            if (error.response.status === 404) {
+              this.$refs.toast.showToast('Login Error', 'User does not exist')
+            } else if (error.response.status === 401) {
+              this.$refs.toast.showToast('Login Error', 'Incorrect Password')
+            }
+          }
+        })
     }
   }
 }
 </script>
-
-<style scoped>
-.fullPage {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #7fc9ff;
-}
-.logo {
-  max-width: 600px;
-  width: 100%;
-  max-height: 600px;
-  height: 100%;
-  padding: 50px;
-}
-.fullForm {
-  position: relative;
-  max-width: 430px;
-  width: 100%;
-  height: 380px;
-  background: #fff;
-  padding: 35px;
-  box-shadow: 5px 5px 8px;
-  border-radius: 6px;
-}
-.fullForm h2 {
-  position: relative;
-  font-size: 30px;
-  font-weight: 600;
-  color: #333;
-}
-
-.fullForm h3 {
-  position: relative;
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-}
-.fullForm form {
-  margin-top: 25px;
-}
-.fullForm form .input-box {
-  height: 52px;
-  margin: 18px 0;
-}
-form .input-box input {
-  height: 100%;
-  width:100%;
-  outline: none;
-  padding: 0 15px;
-  font-size: 17px;
-  font-weight: 400;
-  padding-left: 30px;
-  color: #333;
-  border: 1.5px solid #ada3a3;
-  border-bottom-width: 2.5px;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-}
-.input-box input:focus,
-.input-box input:valid {
-  border-color: #0082d3;
-}
-.input-box.button input {
-  color: #fff;
-  letter-spacing: 1px;
-  border: none;
-  background: #0082d3;
-  cursor: pointer;
-}
-.input-box.button input:hover {
-  background: #003557;
-}
-
-#userIcon {
-  position: absolute;
-  left: 45px;
-  top: 32%;
-  transform: translateY(-50%);
-  z-index: 1;
-}
-#lockIcon {
-  position: absolute;
-  left: 45px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 1;
-}
-</style>
