@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Home from './views/Home.vue'
+import BudgetManagement from './views/BudgetManagement.vue'
+
 import RegisterAccount from './views/RegisterAccount.vue'
 import Login from './views/Login.vue'
 import ManageAccount from './views/ManageAccount.vue'
@@ -15,6 +17,11 @@ const router = new Router({
       name: 'home',
       component: Home,
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/budgetmanagement',
+      name: 'budgetManagement',
+      component: BudgetManagement
     },
     {
       path: '/login',
