@@ -1,144 +1,270 @@
 <template>
-    <div class="container-fluid">
-      <div class="row">
-        <!-- Side Menu -->
-      <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
-        <!-- Budget Buttons -->
-        <a
-          v-for="budget in budgets"
-          :key="budget._id"
-          @click="selectBudget(budget)"
-          class="budget-box"
-        >
-          {{ budget.name }}
-        </a>
-        <!-- Add space below each budget button -->
-        <div class="budget-space"></div>
-      </nav>
+  <div class="budget-management">
 
-        <!-- Main Content -->
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mt-4">
-          <!-- Header and Categories Section -->
-
-          <!-- Display categories for the selected budget -->
-          <div v-if="selectedBudget">
-            <!-- Show selected budget's name -->
-            <h2 class="text-center">{{ selectedBudget.name }}</h2>
-
-            <!-- Create boxes for selectedBudgetCategories -->
-            <div v-for="category in selectedBudgetCategories" :key="category._id" class="category-box">
-              {{ category.name }}
-            </div>
+    <!-- Left Menu: List of Budgets -->
+    <div class="left-menu">
+      <h2>Budgets</h2>
+      <ul>
+        <li v-for="budget in budgets" :key="budget._id">
+          <!-- Budget box: encloses both name and amount -->
+          <div class="budget-box" @click.stop="handleBudgetClick(budget._id)">
+            {{ budget.name }} - ${{ budget.amount }}
+            <button class="delete-button" @click.stop="deleteBudget(budget._id)">Delete</button>
           </div>
-
-          <!-- Categories Section -->
-          <div v-if="categories.length > 0">
-            <h2>Categories</h2>
-            <ul>
-              <li v-for="category in categories" :key="category._id">
-                {{ category.name }} - Amount: {{ category.amount }}
-              </li>
-            </ul>
-          </div>
-        </main>
-      </div>
-
-      <!-- Combined Footer (positioned at the bottom) -->
-      <footer class="fixed-bottom text-center" style="background-color: #333; color: #fff; padding: 10px;">
-        <p>&copy; DoughFlow Dashboard</p>
-        <a href="/">Home</a>
-      </footer>
+        </li>
+      </ul>
     </div>
-  </template>
 
-  <!-- ... rest of your script and style tags ... -->
+  <div class="Right-content">
+    <!-- Right Section: Create Budget Form -->
+    <div class="right-section">
+      <h2>Create New Budget</h2>
+      <form @submit.prevent="createBudget">
+        <input v-model="newBudget.name" placeholder="Budget Name" required>
+        <input v-model.number="newBudget.amount" placeholder="Amount" required>
+        <button type="submit">Add Budget</button>
+      </form>
+    </div>
+
+    <div class="category-section" v-if="selectedBudget">
+    <div v-if="categories && categories.length">
+        <h2>Categories for {{ selectedBudget.name }}</h2>
+        <ul>
+    <li v-for="category in categories" :key="category._id">
+        <div class="category-box">
+            <strong>{{ category.categoryName }}</strong>
+            <!-- Display the total amount spent for this category-->
+            <div>Total amount spent: {{ sumExpenses(category.expenses) }}kr</div>
+
+            <!-- Display the expenses for this category -->
+            <ul>
+                <li v-for="expense in category.expenses" :key="expense._id">
+                    {{ expense.description }}: {{ expense.amount }}kr
+                    <div>{{ formatDate(expense.date) }}</div>
+                </li>
+            </ul>
+        </div>
+    </li>
+</ul>
+
+    </div>
+    <div v-else>
+        <h2>No categories for {{ selectedBudget.name }}</h2>
+    </div>
+  </div>
+</div>
+
+  </div>
+</template>
 
 <script>
 import axios from 'axios'
 
 export default {
+  name: 'BudgetManagement',
   data() {
     return {
-      budgets: [], // Store user's budgets here
-      selectedBudget: null, // Store the selected budget
-      categories: [], // Store fetched categories here
-      selectedBudgetCategories: [] // Store categories for the selected budget
+      newBudget: {
+        name: '',
+        amount: 0
+      },
+      budgets: [],
+      selectedBudget: null,
+      categories: [],
+      expenses: []
     }
   },
-  created() {
-    this.fetchBudgets()
+  mounted() {
+    axios.get('http://localhost:3000/budgets')
+      .then(response => {
+        if (Array.isArray(response.data)) {
+          this.budgets = response.data
+        } else {
+          this.budgets = [] // If the API doesn't return an array, initialize as empty array
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching budgets:', error)
+      })
   },
   methods: {
-    async fetchBudgets() {
+    async createBudget() {
       try {
-        const response = await axios.get('http://localhost:3000/budgets') // Adjust the API endpoint as needed
-        this.budgets = response.data // Assuming your API response structure is an array of budgets
+        const response = await fetch('http://localhost:3000/budgets', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(this.newBudget)
+        })
+        const data = await response.json()
+        if (data.error) {
+          alert(data.error)
+        } else {
+          this.budgets.push(data)
+          // Clear the input form
+          this.newBudget = { name: '', amount: 0 }
+        }
       } catch (error) {
-        console.error('Error fetching budgets:', error)
+        console.error('Error creating budget:', error)
       }
     },
-    async fetchCategories() {
+    async handleBudgetClick(budgetId) {
+      this.categories = []
       try {
-        if (!this.selectedBudget) return // Ensure a budget is selected
-        // Replace with your API endpoint URL to fetch categories for the selected budget
-        const response = await axios.get('http://localhost:3000/budgets/:id/categories') // Adjust the API endpoint as needed
-        this.selectedBudgetCategories = response.data.categories // Assuming your API response structure
+        const budget = this.budgets.find(b => b._id === budgetId)
+        this.selectedBudget = budget
+
+        const response = await fetch(`http://localhost:3000/budgets/${budgetId}/categories`)
+
+        if (!response.ok) {
+          const data = await response.json()
+          console.error('Error fetching categories:', data.error)
+          return
+        }
+
+        const responseData = await response.json()
+        console.log('Fetched Categories:', responseData)
+        // Update the local categories array with fetched data
+        this.categories = await Promise.all(
+          responseData.categories.map(async category => {
+            const expensesResponse = await fetch(`http://localhost:3000/categories/${category._id}/expenses`)
+            const expensesData = await expensesResponse.json()
+            category.expenses = (expensesData && expensesData.expenses) || []
+            return category
+          })
+        )
+
+        this.$forceUpdate()
       } catch (error) {
         console.error('Error fetching categories:', error)
       }
     },
-    selectBudget(budget) {
-      this.selectedBudget = budget
-      // Fetch and display categories for the selected budget here
-      this.fetchCategories()
+
+    async deleteBudget(id) {
+      try {
+        const response = await fetch(`http://localhost:3000/budgets/${id}`, {
+          method: 'DELETE'
+        })
+        if (response.ok) {
+          // Remove the deleted budget from the list
+          this.budgets = this.budgets.filter(budget => budget._id !== id)
+        } else {
+          const data = await response.json()
+          alert(data.error)
+        }
+      } catch (error) {
+        console.error('Error deleting budget:', error)
+      }
+    },
+    async fetchExpensesByCategory(categoryId) {
+      try {
+        const response = await axios.get(`http://localhost:3000/categories/${categoryId}/expenses`)
+        if (response.data && response.data.expenses && response.data.expenses.length > 0) {
+          this.expenses = response.data.expenses
+        } else {
+          console.log('No expenses found for this category')
+          this.expenses = []
+        }
+      } catch (error) {
+        console.error('Error fetching expenses by category:', error)
+      }
+    },
+    sumExpenses(expenses) {
+      return expenses.reduce((total, expense) => total + expense.amount, 0).toFixed(2)
+    },
+    formatDate(dateString) {
+      const options = { year: 'numeric', month: 'long', day: 'numeric' }
+      return new Date(dateString).toLocaleDateString(undefined, options)
     }
+
   }
 }
 </script>
 
-  <style scoped>
-  /* Custom styles for the sidebar and background */
-  .container-fluid {
-    background-color: rgb(52, 192, 239);
-    min-height: 100vh;
-  }
+<style scoped>
+.budget-management {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+}
 
-  /* Sidebar styles */
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-  }
+.left-menu {
+  flex-shrink: 1;
+  min-width: 200px;
+  border-right: 1px solid #ccc;
+  padding-right: 10px;
+  margin-right: 10px;
+}
 
-  /* Style for the budget boxes */
-  .budget-box {
+.left-menu li {
+  margin-bottom: 10px;
+}
+
+.right-section {
+  flex: 3;
+}
+
+.right-content {
+  flex: 2;
+  flex-direction: column;
+}
+.budget-box {
+  display: inline-block;
+  padding: 5px 10px;
+  border: 1px solid #42bbf7;
+  margin-right: 10px; /* To give space between the box and the delete button */
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+
+  /* Optional: add hover effect for better UX */
+  &:hover {
+    background-color: #53b1c1;
+  }
+}
+
+/* Remove bullet point from list items */
+.left-menu ul {
+  list-style-type: none;
+  /*padding-left: 0;*/
+}
+
+.category-section {
+  flex: 2;
+  flex-direction: column;
+  padding-top: 30px;
+  padding-left: 20px;
+  border-left: 1px solid #ccc;
+  list-style-type: none;
+}
+.category-section li {
+  padding: 5px 10px;
+  border: 1px solid #42bbf7;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+  &:hover {
+    background-color: #e6f7ff;
+  }
+}
+.category-section ul {
+  list-style-type: none;
+}
+
+.category-box {
+    display: inline-block;
+    padding: 5px 10px;
+    border: 1px solid #42bbf7;
+    margin-right: 10px; /* To give space between boxes */
+    margin-bottom: 10px; /* To give space between rows of boxes */
     cursor: pointer;
-    padding: 10px;
-    margin: 5px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
     border-radius: 4px;
-  }
+    transition: background-color 0.3s;
 
-  /* Style for the category boxes */
-  .category-box {
-    padding: 10px;
-    margin: 5px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
+    &:hover {
+        background-color: #53b1c1;
+    }
+}
 
-  /* Add space below the cards */
-  .card {
-    margin-bottom: 20px; /* Adjust the margin as needed */
-  }
-
-  /* Custom style for spacing below each budget button */
-  .budget-space {
-  margin-bottom: 30px; /* Adjust the margin as needed */
-  }
-  </style>
+</style>
