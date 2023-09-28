@@ -1,0 +1,45 @@
+.my-toast-body {
+  background-color: #1c6796 !important;
+  color: #ffffff !important;
+}
+
+.my-toast-header {
+  background-color: #1c6796 !important;
+  color: #ffffff !important;
+}
+
+.my-toast-wrapper {
+  border-color: #1c6796 !important;
+  color: #ffffff !important;
+}
+.fullPage {
+  min-height: 100vh;
+  background: #7fc9ff;
+  margin: 0;
+  padding: 0;
+}
+.fullForm {
+position: relative;
+max-width: 430px;
+width: 100%;
+height: 330px;
+background: #fff;
+padding: 35px;
+box-shadow: 5px 5px 8px;
+border-radius: 6px;
+}
+.fullForm h2,
+.fullForm h3 {
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+}
+.input-box i {
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #000;
+}
+.form-control {
+  padding-left: 30px;
+}
