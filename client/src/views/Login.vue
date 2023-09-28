@@ -20,7 +20,7 @@
         <div class="text-center">
           <h3>Don't have an account? <a href="register">Register</a></h3>
         </div>
-        <Toast ref="toast" :toastMessage="toastMessage" :showToast="showToast" />
+        <Toast ref="toast" />
       </form>
           </div>
         </div>
@@ -40,9 +40,7 @@ export default {
   data() {
     return {
       username: '',
-      password: '',
-      toastMessage: '',
-      showToast: false
+      password: ''
     }
   },
   components: {
@@ -50,14 +48,14 @@ export default {
   },
   methods: {
     async login() {
-      await axios.post('http://localhost:3000/login', {
+      await axios.post('http://localhost:3000/api/v1/login', {
         username: this.username,
         password: this.password
       })
         .then((response) => {
           if (response.status === 200) {
             localStorage.setItem('token', response.data.token)
-            if (this.$route.path !== '/') this.$router.push({ name: 'home' })
+            if (this.$route.path !== '/') this.$router.push({ name: 'my-account', params: { username: this.username } })
           }
         })
         .catch((error) => {
@@ -73,3 +71,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.form-control {
+  padding-left: 20px;
+}
+</style>
