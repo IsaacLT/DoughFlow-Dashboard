@@ -75,7 +75,7 @@ export default {
     }
   },
   mounted() {
-    axios.get('http://localhost:3000/budgets')
+    axios.get('http://localhost:3000/api/v1/budgets')
       .then(response => {
         if (Array.isArray(response.data)) {
           this.budgets = response.data
@@ -90,7 +90,7 @@ export default {
   methods: {
     async createBudget() {
       try {
-        const response = await fetch('http://localhost:3000/budgets', {
+        const response = await fetch('http://localhost:3000/api/v1/budgets', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -115,7 +115,7 @@ export default {
         const budget = this.budgets.find(b => b._id === budgetId)
         this.selectedBudget = budget
 
-        const response = await fetch(`http://localhost:3000/budgets/${budgetId}/categories`)
+        const response = await fetch(`http://localhost:3000/api/v1/budgets/${budgetId}/categories`)
 
         if (!response.ok) {
           const data = await response.json()
@@ -128,7 +128,7 @@ export default {
         // Update the local categories array with fetched data
         this.categories = await Promise.all(
           responseData.categories.map(async category => {
-            const expensesResponse = await fetch(`http://localhost:3000/categories/${category._id}/expenses`)
+            const expensesResponse = await fetch(`http://localhost:3000/api/v1/categories/${category._id}/expenses`)
             const expensesData = await expensesResponse.json()
             category.expenses = (expensesData && expensesData.expenses) || []
             return category
@@ -143,7 +143,7 @@ export default {
 
     async deleteBudget(id) {
       try {
-        const response = await fetch(`http://localhost:3000/budgets/${id}`, {
+        const response = await fetch(`http://localhost:3000/api/v1/budgets/${id}`, {
           method: 'DELETE'
         })
         if (response.ok) {
@@ -159,7 +159,7 @@ export default {
     },
     async fetchExpensesByCategory(categoryId) {
       try {
-        const response = await axios.get(`http://localhost:3000/categories/${categoryId}/expenses`)
+        const response = await axios.get(`http://localhost:3000/api/v1/categories/${categoryId}/expenses`)
         if (response.data && response.data.expenses && response.data.expenses.length > 0) {
           this.expenses = response.data.expenses
         } else {

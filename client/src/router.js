@@ -20,7 +20,7 @@ const router = new Router({
     {
       path: '/budgetmanagement',
       name: 'budgetManagement',
-      component: BudgetManagement,
+      component: BudgetManagement
     },
     {
       path: '/login',
