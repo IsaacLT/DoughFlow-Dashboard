@@ -36,10 +36,10 @@ border-radius: 6px;
 }
 .input-box i {
   top: 50%;
-  left: 10px;
+  left: 2px;
   transform: translateY(-50%);
   color: #000;
 }
 .form-control {
-  padding-left: 30px;
+  padding-right: 30px !important;
 }
