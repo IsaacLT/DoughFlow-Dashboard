@@ -82,7 +82,6 @@ export default {
         )
         if (response.status === 200) {
           this.$refs.toast.showToast('Account Deletion', 'Account deleted successfully')
-          // You might want to redirect the user to the login or home page after deletion
           this.$router.push({ name: 'login' })
         }
       } catch (error) {
@@ -100,14 +99,13 @@ export default {
 </script>
 <style scoped>
 #deleteButton {
-    background-color: rgb(218, 0, 0); /* or you can use a specific shade of red using HEX, RGB, or other color codes */
-    color: white; /* text color */
-    border: none; /* removes the default border */
+    background-color: rgb(218, 0, 0); 
+    color: white;
 }
 
 #deleteButton:hover {
-    background-color: rgb(94, 0, 0); /* or any darker shade of red you prefer */
-    cursor: pointer; /* changes the cursor to a hand when hovered over */
+    background-color: rgb(94, 0, 0); 
+    cursor: pointer; 
 }
 .form-control {
   padding-left: 20px;
