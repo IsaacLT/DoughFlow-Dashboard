@@ -1,12 +1,5 @@
 <template>
     <div class="dashboard">
-      <!-- Header with your logo -->
-      <!-- (comment out image)
-    <header>
-        <img src="@/assets/logo.png" alt="Logo Here" />
-      </header>
-        -->
-      <!-- Main content -->
       <main>
         <div class="container mt-4">
           <div class="row">
@@ -23,17 +16,22 @@
                   </div>
                   <!-- Dropdown selection-->
                   <div class="form-group">
-                    <select class="form-control" v-model="category" required>
+                    <select class="form-control" v-model="categoryId" required>
                       <option value="category1">Category 1</option>
                       <option value="category2">Category 2</option>
                       <option value="category3">Category 3</option>
                       <option value="category4">Category 4</option>
                     </select>
                   </div>
-                    <!-- Button in the bottom right corner -->
-                    <div class="button-container">
-                      <button class="btn add-expense-button">Add</button>
+                  <div class="form-group">
+                    <div class="input-box">
+                      <input type="text" class="form-control" v-model="description" placeholder="Description" required>
                     </div>
+                  </div>
+                  <!-- Button in the bottom right corner -->
+                  <div class="button-container">
+                    <button class="btn add-expense-button" @click="addExpense">Add</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -86,14 +84,43 @@
     </div>
 </template>
 <script>
+import axios from 'axios'
+
 export default {
   name: 'Dashboard',
+  data() {
+    return {
+      amount: null,
+      description: '',
+      categoryId: ''
+    }
+  },
   methods: {
     switchToBudgets() {
       this.$router.push('/manage-budgets')
     },
     switchToMyAccount() {
       this.$router.push('/my-account')
+    },
+    async addExpense() {
+      const currentDate = new Date().toISOString()
+      const newExpense = {
+        amount: this.amount,
+        description: this.description,
+        categoryId: this.categoryId,
+        date: currentDate
+      }
+      axios
+        .post('http://localhost:3000/expenses', newExpense)
+        .then(response => {
+          console.log('Expense added successfully', response.data)
+          this.amount = ''
+          this.description = ''
+          this.categoryId = ''
+        })
+        .catch(error => {
+          console.error('Error adding expense', error)
+        })
     }
   }
 }
@@ -107,10 +134,11 @@ export default {
   .header-text {
     font-family: 'Roboto Slab', sans-serif;
     font-weight: bold;
-    color: black;
+    color: white;
   }
   .card {
-  min-height: 200px;
+  min-height: 260px;
+  max-height: 260px;
   background-color: #7fc9ff;;
   }
   .register-expense {
@@ -131,7 +159,6 @@ export default {
     box-shadow: 2px 2px 4px;
   }
   .my-account {
-    text-decoration: underline;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -141,10 +168,11 @@ export default {
     cursor: pointer;
   }
   .my-account:hover {
+    text-decoration: underline;
+    text-decoration-color: white;
     box-shadow: 8px 8px 10px;
   }
   .manage-budgets {
-    text-decoration: underline;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -154,6 +182,8 @@ export default {
     cursor: pointer;
   }
   .manage-budgets:hover {
+    text-decoration: underline;
+    text-decoration-color: white;
     box-shadow: 8px 8px 10px;
   }
   </style>

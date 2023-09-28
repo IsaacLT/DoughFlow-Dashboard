@@ -3,7 +3,7 @@
     <!-- Colored row across the top of the page-->
     <div id="top-section">
       <div id="nav">
-        <router-link to="/" style="color: black;">DoughFlow Dashboard</router-link>
+        <router-link to="/" style="color: white;">DoughFlow Dashboard</router-link>
       </div>
     </div>
     <!-- Render the content of the current page view -->
@@ -27,7 +27,7 @@
   justify-content: center;
   align-items: center;
   font-family: 'Roboto Slab';
-  font-size: larger;
+  font-size: x-large;
   font-weight: bold;
 }
 </style>
