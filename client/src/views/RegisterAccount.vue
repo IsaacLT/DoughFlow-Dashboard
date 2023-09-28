@@ -20,7 +20,7 @@
         <div class="text-center">
           <h3>Already have an account? <a href="login">Login</a></h3>
         </div>
-        <Toast ref="toast" :toastMessage="toastMessage" :showToast="showToast" />
+        <Toast ref="toast" />
       </form>
           </div>
         </div>
@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     async createAccount() {
-      await axios.post('http://localhost:3000/users', {
+      await axios.post('http://localhost:3000/api/v1/users', {
         username: this.username,
         password: this.password
       })
@@ -68,3 +68,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.form-control {
+  padding-left: 20px;
+}
+</style>

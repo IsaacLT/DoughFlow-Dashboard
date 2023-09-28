@@ -5,6 +5,7 @@ import BudgetManagement from './views/BudgetManagement.vue'
 
 import RegisterAccount from './views/RegisterAccount.vue'
 import Login from './views/Login.vue'
+import ManageAccount from './views/ManageAccount.vue'
 Vue.use(Router)
 
 const router = new Router({
@@ -31,6 +32,12 @@ const router = new Router({
       path: '/register',
       name: 'register',
       component: RegisterAccount
+    },
+    {
+      path: '/my-account/:username',
+      name: 'my-account',
+      component: ManageAccount,
+      meta: { requiresAuth: true }
     }
   ]
 })
