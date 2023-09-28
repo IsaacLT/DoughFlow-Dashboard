@@ -186,7 +186,8 @@ export default {
 .budget-management {
   display: flex;
   flex-direction: row;
-  align-items: start;
+  align-items: stretch;
+  height: 100vh;
 }
 
 .left-menu {
