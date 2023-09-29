@@ -1,10 +1,6 @@
 // Import mongoose
 const mongoose = require('mongoose');
 
-// Connect to MongoDB
-const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/';
-const db = mongoose.connect( mongoURI, {useNewUrlParser: true});
-
 // Create schema for budget entity
 const budgetSchema = new mongoose.Schema({
 

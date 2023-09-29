@@ -1,8 +1,5 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-var mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/';
-var db = mongoose.connect(mongoURI, {useNewUrlParser: true});
-
 
 var categorySchema = new Schema({
     categoryName : {
