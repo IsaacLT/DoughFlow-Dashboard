@@ -1,64 +1,68 @@
 <template>
-  <div class="budget-management">
+  <div class="everything">
+    <Navbar id="123"/>
 
-    <!-- Left Menu: List of Budgets -->
-    <div class="left-menu">
-      <h2>Budgets</h2>
-      <ul>
-        <li v-for="budget in budgets" :key="budget._id">
-          <!-- Budget box: encloses both name and amount -->
-          <div class="budget-box" @click.stop="handleBudgetClick(budget._id)">
-            {{ budget.name }} - ${{ budget.amount }}
-            <button class="delete-button" @click.stop="deleteBudget(budget._id)">Delete</button>
-          </div>
-        </li>
-      </ul>
-    </div>
+    <div class="budget-management container-fluid">
+      <div class="row">
 
-  <div class="Right-content">
-    <!-- Right Section: Create Budget Form -->
-    <div class="right-section">
-      <h2>Create New Budget</h2>
-      <form @submit.prevent="createBudget">
-        <input v-model="newBudget.name" placeholder="Budget Name" required>
-        <input v-model.number="newBudget.amount" placeholder="Amount" required>
-        <button type="submit">Add Budget</button>
-      </form>
-    </div>
-
-    <div class="category-section" v-if="selectedBudget">
-    <div v-if="categories && categories.length">
-        <h2>Categories for {{ selectedBudget.name }}</h2>
-        <ul>
-    <li v-for="category in categories" :key="category._id">
-        <div class="category-box">
-            <strong>{{ category.categoryName }}</strong>
-            <!-- Display the total amount spent for this category-->
-            <div>Total amount spent: {{ sumExpenses(category.expenses) }}kr</div>
-
-            <!-- Display the expenses for this category -->
-            <ul>
-                <li v-for="expense in category.expenses" :key="expense._id">
-                    {{ expense.description }}: {{ expense.amount }}kr
-                    <div>{{ formatDate(expense.date) }}</div>
-                </li>
-            </ul>
+        <!-- Left Menu: List of Budgets -->
+        <div class="left-menu col-md-3">
+          <h2>Budgets</h2>
+          <ul class="list-unstyled">
+            <li v-for="budget in budgets" :key="budget._id">
+              <div class="budget-box p-2 mb-3" @click.stop="handleBudgetClick(budget._id)">
+                {{ budget.name }} - ${{ budget.amount }}
+                <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteBudget(budget._id)">Delete</button>
+              </div>
+            </li>
+          </ul>
+          <button @click="deleteAllBudgets" class="delete-all-button btn btn-danger btn-lg btn-block">Delete All Budgets</button>
         </div>
-    </li>
-</ul>
 
-    </div>
-    <div v-else>
-        <h2>No categories for {{ selectedBudget.name }}</h2>
-    </div>
-  </div>
-</div>
+        <div class="right-content col-md-9">
 
+          <!-- Right Section: Create Budget Form -->
+          <div class="right-section mb-4">
+            <h2>Create New Budget</h2>
+            <form @submit.prevent="createBudget" class="form-inline">
+              <input v-model="newBudget.name" placeholder="Budget Name" required class="form-control mr-2">
+              <input v-model.number="newBudget.amount" placeholder="Amount" required class="form-control mr-2">
+              <button type="submit" class="btn btn-primary">Add Budget</button>
+            </form>
+          </div>
+
+          <div class="category-section" v-if="selectedBudget">
+            <div v-if="categories && categories.length">
+              <h2>Categories for {{ selectedBudget.name }}</h2>
+              <ul class="list-unstyled">
+                <li v-for="category in categories" :key="category._id" class="p-2 mb-3 border rounded">
+                  <div class="category-box">
+                    <strong>{{ category.categoryName }}</strong>
+                    <div>Total amount spent: {{ sumExpenses(category.expenses) }}kr</div>
+                    <ul class="list-unstyled">
+                      <li v-for="expense in category.expenses" :key="expense._id" class="mt-2">
+                        {{ expense.description }}: {{ expense.amount }}kr
+                        <div>{{ formatDate(expense.date) }}</div>
+                      </li>
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div v-else>
+              <h2>No categories for {{ selectedBudget.name }}</h2>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import Navbar from '../components/Navbar.vue'
 
 export default {
   name: 'BudgetManagement',
@@ -73,6 +77,9 @@ export default {
       categories: [],
       expenses: []
     }
+  },
+  components: {
+    Navbar
   },
   mounted() {
     axios.get('http://localhost:3000/api/v1/budgets')
@@ -157,6 +164,28 @@ export default {
         console.error('Error deleting budget:', error)
       }
     },
+    async deleteAllBudgets() {
+      const confirmed = window.confirm('Are you sure you want to delete all of your budgets? This step is irrevocable!')
+      if (!confirmed) {
+        return
+      }
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/budgets/', {
+          method: 'DELETE'
+        })
+        if (!response.ok) {
+          const data = await response.json()
+          console.error('Error deleting all budgets:', data.error)
+          alert(data.error)
+          return
+        }
+        this.budgets = [] // Clear all budgets
+        this.selectedBudget = null // Clear selected budget
+        this.categories = [] // Clear categories
+      } catch (error) {
+        console.error('Error deleting all budgets:', error)
+      }
+    },
     async fetchExpensesByCategory(categoryId) {
       try {
         const response = await axios.get(`http://localhost:3000/api/v1/categories/${categoryId}/expenses`)
@@ -185,15 +214,27 @@ export default {
 <style scoped>
 .budget-management {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;;
   align-items: stretch;
   height: 100vh;
+  background: #7fc9ff;
+}
+.budget-management .row{
+  flex-grow: 1;
+  display: flex;
+  align-items: stretch;
 }
 
 .left-menu {
+  display: flex;
+  flex-direction: column;
+  /*height: 100%;*/
+  position: relative;
   flex-shrink: 1;
-  min-width: 200px;
-  border-right: 1px solid #ccc;
+  justify-content: space;
+  min-width: 20px;
+  background:#1f8cdb;
+  border-right: 3px solid #ffffff;
   padding-right: 10px;
   margin-right: 10px;
 }
@@ -207,8 +248,10 @@ export default {
 }
 
 .right-content {
+  display: flex;
   flex: 2;
   flex-direction: column;
+  background: #7fc9ff;
 }
 .budget-box {
   display: inline-block;
@@ -221,7 +264,7 @@ export default {
 
   /* Optional: add hover effect for better UX */
   &:hover {
-    background-color: #53b1c1;
+    background-color: #e5eff0;
   }
 }
 
@@ -236,7 +279,7 @@ export default {
   flex-direction: column;
   padding-top: 30px;
   padding-left: 20px;
-  border-left: 1px solid #ccc;
+  /*border-left: 1px solid #b41a1a;*/
   list-style-type: none;
 }
 .category-section li {
@@ -262,10 +305,34 @@ export default {
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.3s;
+    max-height: 200px;
+    overflow-y: auto;
 
     &:hover {
         background-color: #53b1c1;
     }
+}
+.delete-all-button {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 20px;
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:hover {
+        background-color: #b71a1a;
+    }
+
+}
+#123 {
+  align-items: flex-start;
 }
 
 </style>
