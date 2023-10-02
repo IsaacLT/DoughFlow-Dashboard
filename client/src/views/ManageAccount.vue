@@ -99,13 +99,13 @@ export default {
 </script>
 <style scoped>
 #deleteButton {
-    background-color: rgb(218, 0, 0); 
+    background-color: rgb(218, 0, 0);
     color: white;
 }
 
 #deleteButton:hover {
-    background-color: rgb(94, 0, 0); 
-    cursor: pointer; 
+    background-color: rgb(94, 0, 0);
+    cursor: pointer;
 }
 .form-control {
   padding-left: 20px;
