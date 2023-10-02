@@ -7,18 +7,18 @@
 
         <!-- Left Menu: List of Budgets -->
         <div class="left-menu col-md-3">
-          <h2 id="headerText" class="white-text">Budgets</h2>
-          <ul class="list-unstyled">
-            <li v-for="budget in budgets" :key="budget._id">
-              <div class="budget-box p-2 mb-3" @click.stop="handleBudgetClick(budget._id)">
-                {{ budget.name }} - ${{ budget.amount }}
+    <h2 id="headerText" class="white-text">Budgets</h2>
+    <ul class="list-unstyled">
+        <li v-for="budget in budgets" :key="budget._id">
+            <div class="budget-box p-2 mb-3" @click.stop="handleBudgetClick(budget._id)">
+                <div>{{ budget.name }} - ${{ budget.amount }}</div>
                 <button class="btn btn-info btn-sm ml-2" @click.stop="selectBudget(budget)">Select Budget</button>
                 <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteBudget(budget._id)">Delete</button>
-              </div>
-            </li>
-          </ul>
-          <button @click="deleteAllBudgets" class="delete-all-button btn btn-danger btn-lg btn-block">Delete All Budgets</button>
-        </div>
+            </div>
+        </li>
+    </ul>
+    <button @click="deleteAllBudgets" class="delete-all-button btn btn-danger btn-lg btn-block">Delete All Budgets</button>
+</div>
 
         <div class="right-content col-md-9">
 
@@ -269,7 +269,20 @@ export default {
   display: flex;
   align-items: stretch;
 }
-
+.budget-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+.budget-info {
+  margin-bottom: 5px;
+}
+.budget-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
 .left-menu {
   display: flex;
   flex-direction: column;
@@ -376,7 +389,10 @@ export default {
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
+    max-width: 180px;
+    max-height: 50px;
     margin-top: 10%;
+    font-size: 15px;
     background-color: #ff4d4d;
     color: white;
     border: none;
