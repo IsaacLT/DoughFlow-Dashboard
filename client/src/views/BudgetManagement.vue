@@ -305,7 +305,7 @@ export default {
 }
 
 .right-section {
-  flex: 3;
+  flex: 0.5;
   flex-wrap: nowrap;
 }
 
@@ -313,13 +313,12 @@ export default {
   display: flex;
   flex: 2;
   flex-direction: column;
-  flex-wrap: nowrap;
+  /*flex-wrap: nowrap;*/
   background: #7fc9ff;
 }
 .budget-box {
   display: inline-block;
   padding: 5px 10px;
-  border: 1px solid #42bbf7;
   background: #ffffff;
   margin-right: 10px;
   cursor: pointer;
@@ -333,15 +332,14 @@ export default {
 /* Remove bullet point dots from list*/
 .left-menu ul {
   list-style-type: none;
-  /*padding-left: 0;*/
 }
 
 .category-section {
   flex: 2;
   flex-direction: column;
   padding-top: 30px;
-  padding-left: 20px;
-  /*border-left: 1px solid #b41a1a;*/
+  padding-left: 4%;
+  padding-right: 4%;
   list-style-type: none;
 }
 .category-section li {
@@ -363,13 +361,13 @@ export default {
     display: inline-block;
     padding: 5px 10px;
     border: 1px solid #ffffff;
-    margin-right: 10px;
-    margin-bottom: 10px;
+    /*margin-right: 10px;
+    margin-bottom: 10px;*/
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.3s;
-    max-height: 200px;
-    overflow-y: auto;
+    /*max-height: 200px;*/
+    /*overflow-y: auto;*/
 
     &:hover {
         background-color: #53b1c1;
@@ -383,6 +381,9 @@ export default {
 }
 .delete-category-button {
   margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .delete-all-button {
     position: absolute;
