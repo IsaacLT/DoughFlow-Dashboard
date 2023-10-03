@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from './views/Home.vue'
+import Dashboard from './views/Dashboard.vue' // Import Dashboard page
 import BudgetManagement from './views/BudgetManagement.vue'
 
 import RegisterAccount from './views/RegisterAccount.vue'
@@ -13,9 +13,9 @@ const router = new Router({
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: Home,
+      path: '/dashboard', // Define the path for the dashboard
+      name: 'dashboard', // Name for the route
+      component: Dashboard, // Use the dashboard component
       meta: { requiresAuth: true }
     },
     {

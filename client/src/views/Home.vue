@@ -4,6 +4,9 @@
       <b-button class="btn_message" variant="primary" v-on:click="getMessage()" >Get Message from Server</b-button>
       <p>Message from the server:<br/>
       {{ message }}</p>
+
+      <!-- Button to go to the dashboard (simulate login) -->
+      <router-link to="/dashboard" class="btn btn-success">Go to Dashboard</router-link>
     </b-jumbotron>
   </div>
 </template>
