@@ -2,8 +2,9 @@ const express = require("express");
 const router = express.Router();
 const Category = require('../models/category');
 const Expense = require('../models/expense');
+const authenticator = require('../authenticator');
 
-router.post('/categories', async function (req, res) {
+router.post('/categories', authenticator, async function (req, res) {
     const name = req.body.categoryName;
     const existingCategory = await Category.findOne({categoryName: name});
     if(existingCategory) {
@@ -17,7 +18,7 @@ router.post('/categories', async function (req, res) {
     }
 });
 
-router.get('/categories', async function (req, res) {
+router.get('/categories', authenticator, async function (req, res) {
     const categories = await Category.find({});
     if(categories.length == 0) {
         res.status(404).json({message: "No categories found"});
@@ -26,7 +27,7 @@ router.get('/categories', async function (req, res) {
     }
 });
 
-router.get('/categories/:id', async function (req, res) {
+router.get('/categories/:id', authenticator, async function (req, res) {
     const id = req.params.id;
     // Query the database to retrieve a category by category name
     const category = await Category.findOne({_id: id});
@@ -36,7 +37,7 @@ router.get('/categories/:id', async function (req, res) {
     res.json(category);
 });
 
-router.patch('/categories/:id', async function (req, res) {
+router.patch('/categories/:id', authenticator, async function (req, res) {
     const id = req.params.id;
     // Query the database to retrieve a category by ID
     const category = await Category.findOne({_id: id});
@@ -49,7 +50,7 @@ router.patch('/categories/:id', async function (req, res) {
     res.json(category);
 });
 
-router.delete('/categories/:id', async function(req, res) {
+router.delete('/categories/:id', authenticator, async function(req, res) {
     const id = req.params.id;
     // Query the database to retrieve a category by ID
     const category = await Category.findOne({_id: id});
@@ -60,7 +61,7 @@ router.delete('/categories/:id', async function(req, res) {
     res.json({message: 'Category deleted succesfully'});
 });
 
-router.post('/categories/:id/expenses', async function (req, res) {
+router.post('/categories/:id/expenses', authenticator, async function (req, res) {
     const categoryId = req.params.id;
         // Find the category by Id
     const category = await Category.findById(categoryId);
@@ -84,7 +85,7 @@ router.post('/categories/:id/expenses', async function (req, res) {
         res.json(newExpense);
 });
 
-router.get('/categories/:id/expenses', async function (req, res) {
+router.get('/categories/:id/expenses', authenticator, async function (req, res) {
     const categoryId = req.params.id;
         // Query the database to retrieve a user by ID
         const category = await Category.findById(categoryId).populate("expenses");
@@ -95,7 +96,7 @@ router.get('/categories/:id/expenses', async function (req, res) {
         res.json(category);
 });
 
-router.get('/categories/:id/expenses/:expenseid', async function (req, res) {
+router.get('/categories/:id/expenses/:expenseid', authenticator, async function (req, res) {
     const categoryId = req.params.id;
     const expenseId = req.params.expenseid;
     // Find the category by Id
@@ -111,7 +112,7 @@ router.get('/categories/:id/expenses/:expenseid', async function (req, res) {
     res.json(expense);
 });
 
-router.delete('/categories/:id/expenses/:expenseid', async function (req, res) {
+router.delete('/categories/:id/expenses/:expenseid', authenticator, async function (req, res) {
     const categoryId = req.params.id;
     const expenseId = req.params.expenseid;
     // Find the category by Id

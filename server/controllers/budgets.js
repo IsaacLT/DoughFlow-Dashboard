@@ -3,9 +3,10 @@ const express = require('express');
 const router = express.Router();
 const Budget = require('../models/budget');
 const Category = require('../models/category');
+const authenticator = require('../authenticator');
 
 // Create a new budget instance
-router.post('/budgets', async (req,res) => {                              
+router.post('/budgets', authenticator, async (req,res) => {                              
         if (!req.body.name || isNaN(req.body.amount) || req.body.amount <= 0) {         // Check if budget has name and amount. ("NaN" = not a number)
             return res.status(400).json({ error: 'Invalid budget properties'})
         } else {
@@ -16,7 +17,7 @@ router.post('/budgets', async (req,res) => {
 });
 
 // Get all budgets
-router.get('/budgets', async (req,res) => {
+router.get('/budgets', authenticator, async (req,res) => {
     const budgets = await Budget.find({});        // Query the database to get all budgets
     if (budgets.length == 0) {                    // If no budgets exist, respond with object not found error
         return res.status(404).json({error: 'No budgets exist.'})
@@ -26,7 +27,7 @@ router.get('/budgets', async (req,res) => {
 });
 
 // Get a budget instance
-router.get('/budgets/:id', async (req, res) => {
+router.get('/budgets/:id', authenticator, async (req, res) => {
     const budget = await Budget.findById(req.params.id);    // Request id from URL parameters
     if (!budget) {                                          // If no budget exists, respond with object not found error
         return res.status(404).json({ error: 'Budget not found'});
@@ -36,7 +37,7 @@ router.get('/budgets/:id', async (req, res) => {
 });
 
 // Update all budget attributes (PUT)
-router.put('/budgets/:id', async (req, res) => {
+router.put('/budgets/:id', authenticator, async (req, res) => {
     if (!req.body.name || isNaN(req.body.amount) || req.body.amount <= 0) {         // Check if budget has name and amount. ("NaN" = not a number)
         return res.status(400).json({ error: 'Invalid budget properties'})
     } else {
@@ -54,7 +55,7 @@ router.put('/budgets/:id', async (req, res) => {
 });
 
 // Partially update a budget instance (PATCH)
-router.patch('/budgets/:id', async (req, res) => {
+router.patch('/budgets/:id', authenticator, async (req, res) => {
     const budget = await Budget.findById(req.params.id);
     if (!budget) {
         return res.status(404).json({ error: 'Budget not found'});
@@ -67,7 +68,7 @@ router.patch('/budgets/:id', async (req, res) => {
 });
 
 // Delete all budgets
-router.delete('/budgets', async (req, res) => {
+router.delete('/budgets', authenticator, async (req, res) => {
     const result = await Budget.deleteMany({});       // {} matches all objects in the Budget collection
     if (!result.deletedCount) {
         return res.status(404).json({ error: 'Budget not found'});
@@ -77,7 +78,7 @@ router.delete('/budgets', async (req, res) => {
 });
 
 // Delete a budget instance
-router.delete('/budgets/:id', async (req, res) => {
+router.delete('/budgets/:id', authenticator, async (req, res) => {
     const deletedBudget = await Budget.findByIdAndDelete(req.params.id);
     if (!deletedBudget) {
         return res.status(404).json({ error: 'Budget not found'});
@@ -87,7 +88,7 @@ router.delete('/budgets/:id', async (req, res) => {
 });
 
 // Post operation for endpoint budget/:id/categories
-router.post('/budgets/:id/categories', async (req, res) => {
+router.post('/budgets/:id/categories', authenticator, async (req, res) => {
     const budgetId = req.params.id;
     const budget = await Budget.findById(budgetId);     // Find the category by Id
     if (!budget) {
@@ -102,7 +103,7 @@ router.post('/budgets/:id/categories', async (req, res) => {
 });
 
 // Get operation for endpoint budget/:id/categories
-router.get('/budgets/:id/categories', async (req, res) => {
+router.get('/budgets/:id/categories', authenticator, async (req, res) => {
     const budgetId = req.params.id;
     const budget = await Budget.findById(budgetId).populate("categories");       // Query the database to retrieve a budget by ID
     if (!budget) {
@@ -113,7 +114,7 @@ router.get('/budgets/:id/categories', async (req, res) => {
 });
 
 // Get operation for endpoint budget/:id/categories/:id
-router.get('/budgets/:id/categories/:categoryId', async (req, res) => {
+router.get('/budgets/:id/categories/:categoryId', authenticator, async (req, res) => {
     const budgetId = req.params.id;
     const categoryId = req.params.categoryId;
     const budget = await Budget.findById(budgetId);
@@ -129,7 +130,7 @@ router.get('/budgets/:id/categories/:categoryId', async (req, res) => {
 });
 
 // Delete operation for endpoint budget/:id/categories/:id
-router.delete('/budgets/:id/categories/:categoryId', async (req, res) => {
+router.delete('/budgets/:id/categories/:categoryId', authenticator, async (req, res) => {
     const budgetId = req.params.id;
     const categoryId = req.params.categoryId;
     const budget = await Budget.findById(budgetId);

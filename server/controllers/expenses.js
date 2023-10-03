@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const expense = require("../models/expense");
+const authenticator = require('../authenticator');
 
 
 //CREATE: Create a new expense record
-router.post("/expenses", async (req, res) => {
+router.post("/expenses", authenticator, async (req, res) => {
     try {
         const newExpense = new expense(req.body);
         const savedExpense = await newExpense.save();
@@ -15,7 +16,7 @@ router.post("/expenses", async (req, res) => {
 });
 
 //READ: Get all expenses
-router.get("/expenses", async (req, res) => {
+router.get("/expenses", authenticator, async (req, res) => {
     try {
         const expenses = await expense.find({});
         if(expenses.length === 0){
@@ -31,7 +32,7 @@ router.get("/expenses", async (req, res) => {
 
 
 //READ: Get a single expense by ID
-router.get("/expenses/:id", async (req, res) => {
+router.get("/expenses/:id", authenticator, async (req, res) => {
     try {
         const expenseItem = await expense.findById(req.params.id);
         if (!expenseItem) {
@@ -47,7 +48,7 @@ router.get("/expenses/:id", async (req, res) => {
 
 
 //UPDATE: Update an expense record by ID
-router.put("/expenses/:id", async (req, res) => {
+router.put("/expenses/:id", authenticator, async (req, res) => {
     try {
         const updatedExpense = await expense.findByIdAndUpdate(req.params.id, req.body, {new: true});
         if (!updatedExpense) {
@@ -63,7 +64,7 @@ router.put("/expenses/:id", async (req, res) => {
 
 
 //PATCH: Update an expense record by ID
-router.patch("/expenses/:id", async (req, res) => {
+router.patch("/expenses/:id", authenticator, async (req, res) => {
     try {
         const updatedExpense = await expense.findByIdAndUpdate(req.params.id, { $set: req.body}, {new:true});
         if (!updatedExpense) {
@@ -79,7 +80,7 @@ router.patch("/expenses/:id", async (req, res) => {
 
 
 //DELETE: Delete an expense record by ID
-router.delete("/expenses/:id", async (req, res) => {
+router.delete("/expenses/:id", authenticator, async (req, res) => {
     try {
         const deletedExpense = await expense.findByIdAndRemove(req.params.id);
         if (!deletedExpense) {
@@ -95,7 +96,7 @@ router.delete("/expenses/:id", async (req, res) => {
 
 
 //DELETE: Delete all expenses
-router.delete("/expenses", async (req, res) => {
+router.delete("/expenses", authenticator, async (req, res) => {
     var result = await expense.deleteMany({});
         if (result.deletedCount !== 0) {
             res.json({ message: "All expenses deleted successfully" });
