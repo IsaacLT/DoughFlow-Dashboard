@@ -108,7 +108,7 @@ export default {
   },
   methods: {
     switchToBudgets() {
-      this.$router.push('/manage-budgets')
+      this.$router.push('/BudgetManagement')
     },
     switchToMyAccount() {
       this.$router.push('/my-account')
@@ -169,6 +169,7 @@ export default {
   .dashboard {
     min-height: 100vh;
     padding: 20px;
+    background-color: #E5E4E2;
   }
   .header-text {
     font-family: 'Roboto Slab', sans-serif;

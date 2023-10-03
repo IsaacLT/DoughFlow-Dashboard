@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1/';
-const db = mongoose.connect(mongoURI, {useNewUrlParser: true});
 
 const userSchema = new Schema({
     username : {
