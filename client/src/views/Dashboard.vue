@@ -16,12 +16,20 @@
                   </div>
                   <!-- Dropdown selection-->
                   <div class="form-group">
-                    <select class="form-control" v-model="categoryId" required>
-                      <option value="category1">Category 1</option>
-                      <option value="category2">Category 2</option>
-                      <option value="category3">Category 3</option>
-                      <option value="category4">Category 4</option>
-                    </select>
+                    <div class="dropdown-button-container">
+                        <select class="form-control category" v-model="categoryId" required>
+                        <option disabled value="">Category</option>
+                        <option v-for="category in categories" :key="category._id" :value="category._id">{{ category.categoryName }}</option>
+                      </select>
+                      <button class="btn category-popup-button" @click="showPopup = true">+</button>
+                    </div>
+                  </div>
+                  <div v-if="showPopup" class="popup">
+                    <div class="form-group">
+                      <input class="form-control category-input" v-model="categoryName" @keyup.enter="addCategory" placeholder="New category" />
+                      <button class="btn add-category-button" @click="addCategory">Add</button>
+                      <button class="btn cancel-button" @click="showPopup = false">Cancel</button>
+                    </div>
                   </div>
                   <div class="form-group">
                     <div class="input-box">
@@ -29,7 +37,7 @@
                     </div>
                   </div>
                   <!-- Button in the bottom right corner -->
-                  <div class="button-container">
+                  <div class="add-expense-button-container">
                     <button class="btn add-expense-button" @click="addExpense">Add</button>
                   </div>
                 </div>
@@ -92,7 +100,10 @@ export default {
     return {
       amount: null,
       description: '',
-      categoryId: ''
+      categoryId: '',
+      categories: [],
+      showPopup: false,
+      categoryName: ''
     }
   },
   methods: {
@@ -105,23 +116,51 @@ export default {
     async addExpense() {
       const currentDate = new Date().toISOString()
       const newExpense = {
-        amount: this.amount,
+        amount: parseFloat(this.amount),
         description: this.description,
         categoryId: this.categoryId,
         date: currentDate
       }
+      console.log('Sending expense', newExpense)
       axios
         .post('http://localhost:3000/expenses', newExpense)
         .then(response => {
           console.log('Expense added successfully', response.data)
-          this.amount = ''
+          this.amount = null
           this.description = ''
           this.categoryId = ''
         })
         .catch(error => {
           console.error('Error adding expense', error)
         })
+    },
+    async fetchCategories() {
+      try {
+        const response = await axios.get('http://localhost:3000/budgets/650aa524cbf9b97224116825/categories')
+        this.categories = response.data.categories
+        console.log('Fetched categories', this.categories)
+      } catch (error) {
+        console.error('Error fetching categories', error)
+      }
+    },
+    async addCategory() {
+      const newCategory = {
+        categoryName: this.categoryName
+      }
+      axios
+        .post('http://localhost:3000/budgets/650aa524cbf9b97224116825/categories', newCategory)
+        .then(response => {
+          console.log('Category added successfully', response.data)
+          this.categoryName = ''
+          this.fetchCategories()
+        })
+        .catch(error => {
+          console.error('Error adding category', error)
+        })
     }
+  },
+  mounted() {
+    this.fetchCategories()
   }
 }
 </script>
@@ -139,7 +178,7 @@ export default {
   .card {
   min-height: 260px;
   max-height: 260px;
-  background-color: #7fc9ff;;
+  background-color: #7fc9ff;
   }
   .register-expense {
     box-shadow: 5px 5px 8px;
@@ -148,7 +187,7 @@ export default {
   .register-expense:hover {
     box-shadow: 8px 8px 10px;
   }
-  .button-container {
+  .add-expense-button-container {
   text-align: right;
   margin-top: 10px;
   }
@@ -156,6 +195,13 @@ export default {
     background-color: #50C878;
   }
   .add-expense-button:hover {
+    box-shadow: 2px 2px 4px;
+  }
+  .category-popup-button {
+    background-color: white;
+    margin-left: 5px;
+  }
+  .category-popup-button:hover {
     box-shadow: 2px 2px 4px;
   }
   .my-account {
@@ -172,6 +218,9 @@ export default {
     text-decoration-color: white;
     box-shadow: 8px 8px 10px;
   }
+  .category:hover {
+    cursor: pointer;
+  }
   .manage-budgets {
     display: flex;
     justify-content: center;
@@ -185,5 +234,32 @@ export default {
     text-decoration: underline;
     text-decoration-color: white;
     box-shadow: 8px 8px 10px;
+  }
+  .dropdown-button-container {
+    display: flex;
+    align-items: center;
+  }
+  .popup {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #7fc9ff; /* Adjust the background color and opacity as needed */
+    display: flex;
+    justify-content: center;
+    z-index: 1000;
+    align-items: center;
+    padding-left: 10%;
+    padding-right: 10%;
+  }
+  .add-category-button {
+    background-color: #50C878;
+    margin-right: 10px;
+    margin-top: 5px;
+  }
+  .cancel-button {
+    background-color: #dc3545;
+    margin-top: 5px;
   }
   </style>
