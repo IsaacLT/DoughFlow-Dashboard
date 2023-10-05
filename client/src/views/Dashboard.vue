@@ -53,9 +53,10 @@
             </div>
             <!-- Box 3 -->
             <div class="col-md-4">
-              <div class="card">
+              <div class="barchart card">
                 <div class="card-body">
-                  Bar chart
+                  <h3 id="barchartHeader">Categories</h3>
+                  <ColumnChart />
                 </div>
               </div>
             </div>
@@ -93,6 +94,7 @@
 </template>
 <script>
 import axios from 'axios'
+import ColumnChart from '../components/Columnchart.vue'
 
 export default {
   name: 'Dashboard',
@@ -105,6 +107,9 @@ export default {
       showPopup: false,
       categoryName: ''
     }
+  },
+  components: {
+    ColumnChart
   },
   methods: {
     switchToBudgets() {
@@ -165,6 +170,15 @@ export default {
 }
 </script>
 <style scoped>
+.barchart {
+  box-shadow: 5px 5px 8px;
+}
+#barchartHeader {
+  font-size: 20px;
+  font-family: 'Roboto Slab', sans-serif;
+  font-weight: bold;
+  color: white;
+}
   /* Add custom styles for your dashboard here */
   .dashboard {
     min-height: 100vh;
