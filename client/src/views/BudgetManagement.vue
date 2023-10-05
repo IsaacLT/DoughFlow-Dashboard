@@ -149,6 +149,7 @@ export default {
       if (!response.ok) {
         throw new Error('Error fetching expenses for category')
       }
+      console.log(response.json)
       return response.json()
     },
 

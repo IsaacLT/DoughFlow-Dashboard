@@ -120,6 +120,7 @@ export default {
     },
     async addExpense() {
       const currentDate = new Date().toISOString()
+      const categoryId = this.categoryId
       const newExpense = {
         amount: parseFloat(this.amount),
         description: this.description,
@@ -128,7 +129,7 @@ export default {
       }
       console.log('Sending expense', newExpense)
       axios
-        .post('http://localhost:3000/api/v1/expenses', newExpense, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
+        .post(`http://localhost:3000/api/v1/categories/${categoryId}/expenses`, newExpense, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
           console.log('Expense added successfully', response.data)
           this.amount = null
