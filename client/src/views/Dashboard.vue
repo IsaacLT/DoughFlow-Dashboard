@@ -1,4 +1,6 @@
 <template>
+  <div>
+    <Navbar />
     <div class="dashboard">
       <main>
         <div class="container mt-4">
@@ -91,10 +93,12 @@
         </div>
       </main>
     </div>
+  </div>
 </template>
 <script>
 import axios from 'axios'
 import ColumnChart from '../components/Columnchart.vue'
+import Navbar from '@/components/Navbar'
 
 export default {
   name: 'Dashboard',
@@ -108,7 +112,13 @@ export default {
       categoryName: ''
     }
   },
+  computed: {
+    selectedBudget() {
+      return this.$store.getters.getSelectedBudget
+    }
+  },
   components: {
+    Navbar,
     ColumnChart
   },
   methods: {
@@ -120,6 +130,7 @@ export default {
     },
     async addExpense() {
       const currentDate = new Date().toISOString()
+      const categoryId = this.categoryId
       const newExpense = {
         amount: parseFloat(this.amount),
         description: this.description,
@@ -128,7 +139,7 @@ export default {
       }
       console.log('Sending expense', newExpense)
       axios
-        .post('http://localhost:3000/expenses', newExpense)
+        .post(`http://localhost:3000/api/v1/categories/${categoryId}/expenses`, newExpense, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
           console.log('Expense added successfully', response.data)
           this.amount = null
@@ -140,20 +151,31 @@ export default {
         })
     },
     async fetchCategories() {
-      try {
-        const response = await axios.get('http://localhost:3000/budgets/650aa524cbf9b97224116825/categories')
-        this.categories = response.data.categories
-        console.log('Fetched categories', this.categories)
-      } catch (error) {
-        console.error('Error fetching categories', error)
+      if (!this.selectedBudget) {
+        console.error('No budget selected')
+        return
       }
+      const budgetId = this.selectedBudget._id
+      axios.get(`http://localhost:3000/api/v1/budgets/${budgetId}/categories`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
+        .then(response => {
+          this.categories = response.data.categories
+          console.log('Fetched categories', this.categories)
+        })
+        .catch(error => {
+          console.error('Error fetching categories', error)
+        })
     },
     async addCategory() {
+      if (!this.selectedBudget) {
+        console.error('No budget selected')
+        return
+      }
+      const budgetId = this.selectedBudget._id
       const newCategory = {
         categoryName: this.categoryName
       }
       axios
-        .post('http://localhost:3000/budgets/650aa524cbf9b97224116825/categories', newCategory)
+        .post(`http://localhost:3000/api/v1/budgets/${budgetId}/categories`, newCategory, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
           console.log('Category added successfully', response.data)
           this.categoryName = ''
@@ -207,6 +229,7 @@ export default {
   margin-top: 10px;
   }
   .add-expense-button {
+    font-family: 'Roboto slab', sans-serif;
     background-color: #50C878;
   }
   .add-expense-button:hover {
@@ -269,12 +292,20 @@ export default {
     padding-right: 10%;
   }
   .add-category-button {
+    font-family: 'Roboto slab', sans-serif;
     background-color: #50C878;
     margin-right: 10px;
     margin-top: 5px;
   }
+  .add-category-button:hover {
+    box-shadow: 2px 2px 4px;
+  }
   .cancel-button {
+    font-family: 'Roboto slab', sans-serif;
     background-color: #dc3545;
     margin-top: 5px;
+  }
+  .cancel-button:hover {
+    box-shadow: 2px 2px 4px;
   }
   </style>
