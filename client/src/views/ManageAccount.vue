@@ -1,6 +1,7 @@
 <template>
+  <div>
+    <Navbar />
     <div class="fullPage">
-        <Navbar />
       <div class="container d-flex align-items-center justify-content-center min-vh-100">
         <div class="row">
           <div class="col-md-6 order-2 order-md-1">
@@ -31,6 +32,7 @@
         </div>
       </div>
     </div>
+  </div>
 </template>
 <script>
 import axios from 'axios'

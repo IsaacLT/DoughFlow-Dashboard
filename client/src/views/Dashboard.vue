@@ -1,4 +1,6 @@
 <template>
+  <div>
+    <Navbar />
     <div class="dashboard">
       <main>
         <div class="container mt-4">
@@ -90,9 +92,11 @@
         </div>
       </main>
     </div>
+  </div>
 </template>
 <script>
 import axios from 'axios'
+import Navbar from '@/components/Navbar'
 
 export default {
   name: 'Dashboard',
@@ -105,6 +109,9 @@ export default {
       showPopup: false,
       categoryName: ''
     }
+  },
+  components: {
+    Navbar
   },
   methods: {
     switchToBudgets() {

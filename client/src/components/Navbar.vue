@@ -1,8 +1,15 @@
 <template>
+  <div class="out">
     <nav class="navbar">
-      <button class="navbtn" @click="handleDashboard">Dashboard</button>
-      <button class="navbtn" @click="handleLogout">Logout</button>
+      <router-link to="/dashboard">
+      <img id="logo" src="../assets/logonotext.png" alt="Logo" />
+    </router-link>
+    <h2 class="header">DoughFlow</h2>
+    <router-link to="/login" @click="handleLogout">
+      <h3 class="header">Logout</h3>
+    </router-link>
     </nav>
+  </div>
   </template>
 
 <script>
@@ -23,22 +30,21 @@ export default {
 .navbar {
   display: flex;
   justify-content: space-between;
-  height: 40px;
-  background-color: #477899;
-  /*padding: 10px 20px;*/
+  align-items: center;
+  height: 60px;
+  background-color: #7fc9ff;
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4);
 }
-.navbtn {
-  height: 20px;
-  max-width: 150px;
-  font-size: 14px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  border: none;
-  background-color: white;
-  color: inherit;
-  cursor: pointer;
-  padding: 0 10px;
-  border-radius: 4px;
+#logo {
+  margin-bottom: 0px;
+  width: 60px;
+  height: auto;
+}
+.header {
+  margin-top: 10px;
+  font-family: 'Roboto Slab', sans-serif;
+  font-weight: bold;
+  color: white;
+  font-size: 20px;
 }
 </style>
