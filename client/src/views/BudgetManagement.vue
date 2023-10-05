@@ -21,7 +21,6 @@
 </div>
 
         <div class="right-content col-md-9">
-
           <!-- Right Section: Create Budget Form -->
           <div class="right-section mb-4">
             <h2 id="headerText" class="white-text">Create New Budget</h2>
@@ -71,6 +70,7 @@
 <script>
 import axios from 'axios'
 import Navbar from '../components/Navbar.vue'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'BudgetManagement',
@@ -90,8 +90,11 @@ export default {
   components: {
     Navbar
   },
+  computed: {
+    ...mapGetters(['getSelectedBudget'])
+  },
   mounted() {
-    axios.get(`${this.URL}/budgets`)
+    axios.get(`${this.URL}/budgets`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
       .then(response => {
         if (Array.isArray(response.data)) {
           this.budgets = response.data
@@ -110,7 +113,8 @@ export default {
         const response = await fetch(`${this.URL}/budgets`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + localStorage.getItem('token')
           },
           body: JSON.stringify(this.newBudget)
         })
@@ -128,12 +132,12 @@ export default {
     },
 
     selectBudget(budget) {
-      this.selectedBudget = budget
-      alert(`${this.selectedBudget.name} is now set as your budget.`)
+      this.$store.dispatch('updateSelectedBudget', budget)
+      alert(`${budget.name} is now set as your budget.`)
     },
 
     async fetchCategoriesForBudget(budgetId) {
-      const response = await fetch(`${this.URL}/budgets/${budgetId}/categories`)
+      const response = await fetch(`${this.URL}/budgets/${budgetId}/categories`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
       if (!response.ok) {
         throw new Error('Error fetching categories')
       }
@@ -141,7 +145,7 @@ export default {
     },
 
     async fetchExpensesForCategory(categoryId) {
-      const response = await fetch(`${this.URL}/categories/${categoryId}/expenses`)
+      const response = await fetch(`${this.URL}/categories/${categoryId}/expenses`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
       if (!response.ok) {
         throw new Error('Error fetching expenses for category')
       }
@@ -172,7 +176,8 @@ export default {
       }
       try {
         const response = await fetch(`${this.URL}/budgets/${id}`, {
-          method: 'DELETE'
+          method: 'DELETE',
+          headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
         })
         if (response.ok) {
           // Remove the deleted budget from the list
@@ -192,7 +197,8 @@ export default {
       }
       try {
         const response = await fetch(`${this.URL}/budgets/`, {
-          method: 'DELETE'
+          method: 'DELETE',
+          headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
         })
         if (!response.ok) {
           const data = await response.json()
@@ -216,7 +222,8 @@ export default {
 
       try {
         const response = await fetch(`${this.URL}/categories/${categoryId}`, {
-          method: 'DELETE'
+          method: 'DELETE',
+          headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
         })
 
         if (response.ok) {
@@ -233,7 +240,7 @@ export default {
 
     async fetchExpensesByCategory(categoryId) {
       try {
-        const response = await axios.get(`${this.URL}/categories/${categoryId}/expenses`)
+        const response = await axios.get(`${this.URL}/categories/${categoryId}/expenses`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         if (response.data && response.data.expenses && response.data.expenses.length > 0) {
           this.expenses = response.data.expenses
         } else {
