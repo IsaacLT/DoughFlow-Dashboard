@@ -57,8 +57,8 @@
             <div class="col-md-4">
               <div class="barchart card">
                 <div class="card-body">
-                  <h3 id="barchartHeader">Categories</h3>
-                  <ColumnChart />
+                  <h3 id="barchartHeader">Spent By Category</h3>
+                  <ColumnChart :categories="categories" :expenses="expenseData"/>
                 </div>
               </div>
             </div>
@@ -109,7 +109,8 @@ export default {
       categoryId: '',
       categories: [],
       showPopup: false,
-      categoryName: ''
+      categoryName: '',
+      expenseData: []
     }
   },
   computed: {
@@ -122,6 +123,9 @@ export default {
     ColumnChart
   },
   methods: {
+    fetchData() {
+
+    },
     switchToBudgets() {
       this.$router.push('/BudgetManagement')
     },
@@ -137,7 +141,8 @@ export default {
         categoryId: this.categoryId,
         date: currentDate
       }
-      console.log('Sending expense', newExpense)
+      this.expenseData.push(newExpense)
+      console.log('Sending expense', this.expenseData)
       axios
         .post(`http://localhost:3000/api/v1/categories/${categoryId}/expenses`, newExpense, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
@@ -159,7 +164,7 @@ export default {
       axios.get(`http://localhost:3000/api/v1/budgets/${budgetId}/categories`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
           this.categories = response.data.categories
-          console.log('Fetched categories', this.categories)
+          console.log('Fetched categories', this.categories, this.categoryNames)
         })
         .catch(error => {
           console.error('Error fetching categories', error)
@@ -174,6 +179,7 @@ export default {
       const newCategory = {
         categoryName: this.categoryName
       }
+      this.categoryNames.push(newCategory)
       axios
         .post(`http://localhost:3000/api/v1/budgets/${budgetId}/categories`, newCategory, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
