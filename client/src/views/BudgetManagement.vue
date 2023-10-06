@@ -13,7 +13,7 @@
             <div class="budget-box p-2 mb-3" @click.stop="handleBudgetClick(budget._id)">
                 <div>{{ budget.name }} - ${{ budget.amount }}</div>
                 <button class="btn btn-info btn-sm ml-2" @click.stop="selectBudget(budget)">Select Budget</button>
-                <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteBudget(budget._id)">Delete</button>
+                <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteBudget(budget)">Delete</button>
             </div>
         </li>
     </ul>
@@ -170,19 +170,26 @@ export default {
       }
     },
 
-    async deleteBudget(id) {
+    async deleteBudget(budget) {
+      console.log('Budget data:', budget)
+
+      if (!budget.links || !budget.links.delete) {
+        alert('Delete action is not available for this budget.')
+        return
+      }
+
       const confirmed = window.confirm('Are you sure you want to delete this budget? This action cannot be undone!')
       if (!confirmed) {
         return
       }
       try {
-        const response = await fetch(`${this.URL}/budgets/${id}`, {
+        const response = await fetch(budget.links.delete.href, {
           method: 'DELETE',
           headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
         })
         if (response.ok) {
           // Remove the deleted budget from the list
-          this.budgets = this.budgets.filter(budget => budget._id !== id)
+          this.budgets = this.budgets.filter(b => b._id !== budget._id)
         } else {
           const data = await response.json()
           alert(data.error)
