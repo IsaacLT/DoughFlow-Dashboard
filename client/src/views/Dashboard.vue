@@ -56,9 +56,11 @@
             <!-- Box 3 -->
             <div class="col-md-4">
               <div class="barchart card">
-                <div class="card-body">
-                  <h3 id="barchartHeader">Spent By Category</h3>
-                  <ColumnChart :categories="categories"/>
+                <h3 id="barchartHeader">Spent By Category</h3>
+                <div class="barcard card-body">
+                  <div class="form-group">
+                    <ColumnChart :categories="categories"/>
+                  </div>
                 </div>
               </div>
             </div>
@@ -75,7 +77,7 @@
             </div>
             <!-- Box 5 -->
             <div class="col-md-4">
-              <div class="card">
+              <div class="card saved">
                 <div class="card-body">
                   Saved by DoughFlow
                 </div>
@@ -195,11 +197,15 @@ export default {
 .barchart {
   box-shadow: 5px 5px 8px;
 }
+.barcard {
+  padding: 0px;
+}
 #barchartHeader {
-  font-size: 20px;
+  font-size: 18px;
   font-family: 'Roboto Slab', sans-serif;
   font-weight: bold;
   color: white;
+  padding: 8px;
 }
   .dashboard {
     min-height: 100vh;
@@ -212,9 +218,12 @@ export default {
     color: white;
   }
   .card {
-  min-height: 260px;
-  max-height: 260px;
+  /*min-height: 260px;
+  max-height: 260px;*/
   background-color: #7fc9ff;
+  }
+  .saved {
+    min-height: 260px;
   }
   .register-expense {
     box-shadow: 5px 5px 8px;
@@ -246,6 +255,7 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100%;
+    min-height: 260px;
     box-shadow: 5px 5px 8px;
     border-radius: 6px;
     cursor: pointer;
@@ -263,6 +273,7 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100%;
+    min-height: 260px;
     box-shadow: 5px 5px 8px;
     border-radius: 6px;
     cursor: pointer;

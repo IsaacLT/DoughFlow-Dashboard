@@ -25,7 +25,10 @@ export default {
     chartOptions() {
       return {
         chart: {
-          id: 'columnchart'
+          id: 'columnchart',
+          toolbar: {
+            show: false
+          }
         },
         xaxis: {
           categories: this.categoryNames,
@@ -38,7 +41,7 @@ export default {
         yaxis: {
           labels: {
             style: {
-              fontSize: '14px'
+              fontSize: '12px'
             }
           }
         },
