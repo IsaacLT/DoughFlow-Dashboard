@@ -58,7 +58,7 @@
               <div class="barchart card">
                 <div class="card-body">
                   <h3 id="barchartHeader">Spent By Category</h3>
-                  <ColumnChart :categories="categories" :expenses="expenseData"/>
+                  <ColumnChart :categories="categories"/>
                 </div>
               </div>
             </div>
@@ -109,8 +109,7 @@ export default {
       categoryId: '',
       categories: [],
       showPopup: false,
-      categoryName: '',
-      expenseData: []
+      categoryName: ''
     }
   },
   computed: {
@@ -123,9 +122,6 @@ export default {
     ColumnChart
   },
   methods: {
-    fetchData() {
-
-    },
     switchToBudgets() {
       this.$router.push('/BudgetManagement')
     },
@@ -141,8 +137,7 @@ export default {
         categoryId: this.categoryId,
         date: currentDate
       }
-      this.expenseData.push(newExpense)
-      console.log('Sending expense', this.expenseData)
+      console.log('Sending expense', newExpense)
       axios
         .post(`http://localhost:3000/api/v1/categories/${categoryId}/expenses`, newExpense, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
@@ -150,6 +145,7 @@ export default {
           this.amount = null
           this.description = ''
           this.categoryId = ''
+          this.fetchCategories()
         })
         .catch(error => {
           console.error('Error adding expense', error)
@@ -164,7 +160,6 @@ export default {
       axios.get(`http://localhost:3000/api/v1/budgets/${budgetId}/categories`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
           this.categories = response.data.categories
-          console.log('Fetched categories', this.categories, this.categoryNames)
         })
         .catch(error => {
           console.error('Error fetching categories', error)
@@ -179,7 +174,6 @@ export default {
       const newCategory = {
         categoryName: this.categoryName
       }
-      this.categoryNames.push(newCategory)
       axios
         .post(`http://localhost:3000/api/v1/budgets/${budgetId}/categories`, newCategory, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
@@ -207,7 +201,6 @@ export default {
   font-weight: bold;
   color: white;
 }
-  /* Add custom styles for your dashboard here */
   .dashboard {
     min-height: 100vh;
     padding: 20px;
