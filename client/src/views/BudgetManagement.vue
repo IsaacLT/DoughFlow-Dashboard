@@ -173,7 +173,7 @@ export default {
     async deleteBudget(budget) {
       console.log('Budget data:', budget)
 
-      //Check so that the budget object actually contains hateoas links
+      // Check so that the budget object actually contains hateoas links
       if (!budget.links || !budget.links.delete) {
         alert('Delete action is not available for this budget.')
         return
@@ -184,7 +184,7 @@ export default {
         return
       }
       try {
-        //Instead of using a hardcoded url, use the HATEOAS link that's part of the budget object to delet
+        // Instead of using a hardcoded url, use the HATEOAS link that's part of the budget object to delet
         const response = await fetch(budget.links.delete.href, {
           method: 'DELETE',
           headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
