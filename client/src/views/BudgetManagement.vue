@@ -39,11 +39,11 @@
               <ul class="list-unstyled">
                 <li v-for="category in categories" :key="category._id" class="p-2 mb-3 border rounded">
                   <div class="category-container">
-                    <div class="category-box">
-                      <div class="category-name">
+                    <div class="category-name">
                         <strong>{{ category.categoryName }}</strong>
                       </div>
                     <div>Total amount spent: {{ sumExpenses(category.expenses) }}kr</div>
+                    <div class="category-box">
 
                     <ul class="list-unstyled">
                       <li v-for="expense in category.expenses" :key="expense._id" class="mt-2">
@@ -58,6 +58,7 @@
                         <input v-model="expense.description" placeholder="Description" @click.stop>
                         <input :value="formatDateForInput(expense.date)" @input="expense.date = $event.target.value" type="date" placeholder="Date" @click.stop>
                         <button @click="updateExpense(expense)">Save</button>
+                        <button @click.stop="deleteExpense(category, expense._id)">Delete Expense</button>
                       </div>
                       </div>
                       </li>
@@ -102,6 +103,7 @@ export default {
       showUpdateButtonId: null
     }
   },
+
   components: {
     Navbar
   },
@@ -216,6 +218,7 @@ export default {
         console.error('Error deleting budget:', error)
       }
     },
+
     async deleteAllBudgets() {
       const confirmed = window.confirm('Are you sure you want to delete all of your budgets? This step is irrevocable!')
       if (!confirmed) {
@@ -304,12 +307,40 @@ export default {
       }
     },
 
+    async deleteExpense(category, expenseId) {
+      const confirmed = window.confirm('Are you sure you want to delete this expense? This action cannot be undone!')
+      if (!confirmed) {
+        return
+      }
+
+      try {
+        const response = await fetch(`${this.URL}/expenses/${expenseId}`, {
+          method: 'DELETE',
+          headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
+        })
+
+        if (response.ok) {
+          // Find the category within your categories array
+          const categoryIndex = this.categories.indexOf(category)
+          if (categoryIndex > -1) {
+            // Update expenses for the found category
+            this.categories[categoryIndex].expenses = this.categories[categoryIndex].expenses.filter(expense => expense._id !== expenseId)
+          }
+        } else {
+          const data = await response.json()
+          alert(data.error)
+        }
+      } catch (error) {
+        console.error('Error deleting category:', error)
+      }
+    },
+
     toggleUpdateForm(expenseId) {
       if (this.showUpdateForm === expenseId) {
-        // If the form the currently chosen expense is shown, hide it
+      // If the form the currently chosen expense is shown, hide it
         this.showUpdateForm = null
       } else {
-        // Otherwise, show it
+      // Otherwise, show it
         this.showUpdateForm = expenseId
       }
     },
@@ -339,9 +370,9 @@ export default {
       const date = new Date(dateString)
       return date.toISOString().split('T')[0]
     }
-
   }
 }
+
 </script>
 
 <style scoped>
