@@ -276,7 +276,7 @@ export default {
         const updatedData = {
           amount: parseFloat(expenseToUpdate.amount),
           description: expenseToUpdate.description,
-          date: expenseToUpdate.date
+          date: new Date(expenseToUpdate.date).toISOString()
         }
 
         const response = await axios.put(`${this.URL}/expenses/${expenseToUpdate._id}`, updatedData, {
