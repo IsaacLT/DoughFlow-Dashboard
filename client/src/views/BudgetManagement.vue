@@ -53,7 +53,7 @@
                         <div v-if="showUpdateForm">
                         <input v-model="expense.amount" placeholder="Amount">
                         <input v-model="expense.description" placeholder="Description">
-                        <input v-model="expense.date" type="date" placeholder="Date">
+                        <input :value="formatDateForInput(expense.date)" @input="expense.date = $event.target.value" type="date" placeholder="Date">
                         <button @click="updateExpense(expense)">Save</button>
                       </div>
                       </li>
@@ -307,6 +307,11 @@ export default {
     formatDate(dateString) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' }
       return new Date(dateString).toLocaleDateString(undefined, options)
+    },
+
+    formatDateForInput(dateString) {
+      const date = new Date(dateString)
+      return date.toISOString().split('T')[0]
     }
 
   }
