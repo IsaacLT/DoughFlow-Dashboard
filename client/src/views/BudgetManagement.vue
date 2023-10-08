@@ -44,17 +44,21 @@
                         <strong>{{ category.categoryName }}</strong>
                       </div>
                     <div>Total amount spent: {{ sumExpenses(category.expenses) }}kr</div>
+
                     <ul class="list-unstyled">
                       <li v-for="expense in category.expenses" :key="expense._id" class="mt-2">
+                        <div class="expense-container" @click="showUpdateButton(expense._id)">
                         {{ expense.description }}: {{ expense.amount }}kr
                         <div>{{ formatDate(expense.date) }}</div>
 
-                        <button @click="toggleUpdateForm(expense._id)">Update Expense</button>
+                        <button v-if="showUpdateButtonId === expense._id" @click.stop="toggleUpdateForm(expense._id)">Update Expense</button>
                         <div v-if="showUpdateForm === expense._id">
-                        <input v-model="expense.amount" placeholder="Amount">
-                        <input v-model="expense.description" placeholder="Description">
-                        <input :value="formatDateForInput(expense.date)" @input="expense.date = $event.target.value" type="date" placeholder="Date">
+
+                        <input v-model="expense.amount" placeholder="Amount" @click.stop>
+                        <input v-model="expense.description" placeholder="Description" @click.stop>
+                        <input :value="formatDateForInput(expense.date)" @input="expense.date = $event.target.value" type="date" placeholder="Date" @click.stop>
                         <button @click="updateExpense(expense)">Save</button>
+                      </div>
                       </div>
                       </li>
                     </ul>
@@ -94,7 +98,8 @@ export default {
       expenses: [],
       URL: 'http://localhost:3000/api/v1',
       // stores the currently clicked expense Id
-      showUpdateForm: null
+      showUpdateForm: null,
+      showUpdateButtonId: null
     }
   },
   components: {
@@ -116,6 +121,7 @@ export default {
         console.error('Error fetching budgets:', error)
       })
   },
+
   methods: {
 
     async createBudget() {
@@ -308,6 +314,15 @@ export default {
       }
     },
 
+    showUpdateButton(expenseId) {
+      if (this.showUpdateButtonId === expenseId) {
+        this.showUpdateButtonId = null
+      } else {
+        this.showUpdateButtonId = expenseId
+        this.showUpdateForm = null // Ensure form is hidden when showing update button
+      }
+    },
+
     sumExpenses(expenses) {
       return expenses.reduce((total, expense) => {
         const amount = parseFloat(expense.amount)
@@ -439,8 +454,9 @@ export default {
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.3s;
-    /*max-height: 200px;*/
-    /*overflow-y: auto;*/
+    min-height: 50px;
+    max-height: 200px;
+    overflow-y: auto;
 
     &:hover {
         background-color: #53b1c1;
@@ -453,7 +469,7 @@ export default {
   align-items: center;
 }
 .delete-category-button {
-  margin-top: 10px;
+  margin-top: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
