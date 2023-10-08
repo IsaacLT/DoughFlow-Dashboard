@@ -48,9 +48,9 @@
                       <li v-for="expense in category.expenses" :key="expense._id" class="mt-2">
                         {{ expense.description }}: {{ expense.amount }}kr
                         <div>{{ formatDate(expense.date) }}</div>
-                        <button @click="showUpdateForm = !showUpdateForm">Update Expense</button>
 
-                        <div v-if="showUpdateForm">
+                        <button @click="toggleUpdateForm(expense._id)">Update Expense</button>
+                        <div v-if="showUpdateForm === expense._id">
                         <input v-model="expense.amount" placeholder="Amount">
                         <input v-model="expense.description" placeholder="Description">
                         <input :value="formatDateForInput(expense.date)" @input="expense.date = $event.target.value" type="date" placeholder="Date">
@@ -93,7 +93,8 @@ export default {
       categories: [],
       expenses: [],
       URL: 'http://localhost:3000/api/v1',
-      showUpdateForm: false
+      // stores the currently clicked expense Id
+      showUpdateForm: null
     }
   },
   components: {
@@ -294,6 +295,16 @@ export default {
         }
       } catch (error) {
         console.error('Error updating expense:', error)
+      }
+    },
+
+    toggleUpdateForm(expenseId) {
+      if (this.showUpdateForm === expenseId) {
+        // If the form the currently chosen expense is shown, hide it
+        this.showUpdateForm = null
+      } else {
+        // Otherwise, show it
+        this.showUpdateForm = expenseId
       }
     },
 
