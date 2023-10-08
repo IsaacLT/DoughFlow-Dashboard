@@ -48,6 +48,14 @@
                       <li v-for="expense in category.expenses" :key="expense._id" class="mt-2">
                         {{ expense.description }}: {{ expense.amount }}kr
                         <div>{{ formatDate(expense.date) }}</div>
+                        <button @click="showUpdateForm = !showUpdateForm">Update Expense</button>
+
+                        <div v-if="showUpdateForm">
+                        <input v-model="expense.amount" placeholder="Amount">
+                        <input v-model="expense.description" placeholder="Description">
+                        <input v-model="expense.date" type="date" placeholder="Date">
+                        <button @click="updateExpense(expense)">Save</button>
+                      </div>
                       </li>
                     </ul>
                   </div>
@@ -84,7 +92,8 @@ export default {
       selectedBudget: null,
       categories: [],
       expenses: [],
-      URL: 'http://localhost:3000/api/v1'
+      URL: 'http://localhost:3000/api/v1',
+      showUpdateForm: false
     }
   },
   components: {
@@ -261,9 +270,40 @@ export default {
         console.error('Error fetching expenses by category:', error)
       }
     },
-    sumExpenses(expenses) {
-      return expenses.reduce((total, expense) => total + expense.amount, 0).toFixed(2)
+
+    async updateExpense(expenseToUpdate) {
+      try {
+        const updatedData = {
+          amount: parseFloat(expenseToUpdate.amount),
+          description: expenseToUpdate.description,
+          date: expenseToUpdate.date
+        }
+
+        const response = await axios.put(`${this.URL}/expenses/${expenseToUpdate._id}`, updatedData, {
+          headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
+        })
+
+        if (response.status === 200) {
+          console.log('After successful update:', this.showUpdateForm)
+          alert('Expense updated successfully!')
+          // Optionally update the local data or re-fetch the data
+          this.showUpdateForm = false
+          console.log('After setting to false:', this.showUpdateForm)
+        } else {
+          alert('Error updating the expense!')
+        }
+      } catch (error) {
+        console.error('Error updating expense:', error)
+      }
     },
+
+    sumExpenses(expenses) {
+      return expenses.reduce((total, expense) => {
+        const amount = parseFloat(expense.amount)
+        return isNaN(amount) ? total : total + amount
+      }, 0).toFixed(2)
+    },
+
     formatDate(dateString) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' }
       return new Date(dateString).toLocaleDateString(undefined, options)
