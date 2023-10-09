@@ -11,7 +11,9 @@
     "node": "18.x"
   },
   "dependencies": {
+    "apexcharts": "^3.43.0",
     "axios": "^1.5.1",
+    "vue-apexcharts": "^1.6.2",
     "vuex": "^3.6.2"
   }
 }

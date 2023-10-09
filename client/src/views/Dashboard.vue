@@ -30,7 +30,7 @@
                     <div class="form-group">
                       <input class="form-control category-input" v-model="categoryName" @keyup.enter="addCategory" placeholder="New category" />
                       <button class="btn add-category-button" @click="addCategory">Add</button>
-                      <button class="btn cancel-button" @click="showPopup = false">Cancel</button>
+                      <button class="btn exit-button" @click="showPopup = false">Exit</button>
                     </div>
                   </div>
                   <div class="form-group">
@@ -49,7 +49,9 @@
             <div class="col-md-4">
               <div class="card">
                 <div class="card-body">
-                  Circle diagram here
+                  <div class="form-group">
+                    <apexchart type="radialBar" :options="chartOptions" :series="[remainingAmountPercentage]"/>
+                  </div>
                 </div>
               </div>
             </div>
@@ -113,6 +115,85 @@ export default {
   computed: {
     selectedBudget() {
       return this.$store.getters.getSelectedBudget
+    },
+    remainingAmount() {
+      if (this.selectedBudget) {
+        return this.selectedBudget.amount - this.totalExpenses
+      }
+      return 0
+    },
+    remainingAmountPercentage() {
+      if (this.selectedBudget) {
+        return (this.totalExpenses() / this.selectedBudget.amount) * 100
+      }
+      return 0
+    },
+    chartOptions() {
+      return {
+        chart: {
+          type: 'radialBar',
+          toolbar: {
+            show: false
+          }
+        },
+        plotOptions: {
+          radialBar: {
+            hollow: {
+              margin: 0,
+              size: '80%'
+            },
+            track: {
+              background: '#fff',
+              strokeWidth: '95%',
+              margin: 0,
+              dropShadow: {
+                enabled: true,
+                top: -3,
+                left: 0,
+                blur: 4,
+                opacity: 0.35
+              }
+            },
+            dataLabels: {
+              show: true,
+              name: {
+                offsetY: -10,
+                show: true,
+                color: '#FFFFFF',
+                fontSize: '20px',
+                fontFamily: 'Roboto slab'
+              },
+              value: {
+                formatter: function (val) {
+                  return parseInt(val) + '%'
+                },
+                color: '#FFFFFF',
+                fontSize: '30px',
+                fontFamily: 'Roboto slab',
+                show: true
+              }
+            }
+          }
+        },
+        fill: {
+          type: 'gradient',
+          gradient: {
+            shade: 'dark',
+            type: 'horizontal',
+            shadeIntensity: 0.5,
+            gradientToColors: ['#ABE5A1'],
+            inverseColors: true,
+            opacityFrom: 1,
+            opacityTo: 1,
+            stops: [0, 100]
+          }
+        },
+        stroke: {
+          lineCap: 'round',
+          width: -10
+        },
+        labels: [this.selectedBudget ? this.selectedBudget.name : 'No Budget Selected']
+      }
     }
   },
   components: {
@@ -181,6 +262,10 @@ export default {
         .catch(error => {
           console.error('Error adding category', error)
         })
+    },
+    totalExpenses() {
+      // Implement this function
+      return 5000
     }
   },
   mounted() {
@@ -204,10 +289,7 @@ export default {
   min-height: 260px;
   max-height: 260px;
   background-color: #7fc9ff;
-  }
-  .register-expense {
-    box-shadow: 5px 5px 8px;
-    border-radius: 6px;
+  box-shadow: 5px 5px 8px;
   }
   .register-expense:hover {
     box-shadow: 8px 8px 10px;
@@ -235,8 +317,6 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100%;
-    box-shadow: 5px 5px 8px;
-    border-radius: 6px;
     cursor: pointer;
   }
   .my-account:hover {
@@ -252,8 +332,6 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100%;
-    box-shadow: 5px 5px 8px;
-    border-radius: 6px;
     cursor: pointer;
   }
   .manage-budgets:hover {
@@ -288,12 +366,12 @@ export default {
   .add-category-button:hover {
     box-shadow: 2px 2px 4px;
   }
-  .cancel-button {
+  .exit-button {
     font-family: 'Roboto slab', sans-serif;
     background-color: #dc3545;
     margin-top: 5px;
   }
-  .cancel-button:hover {
+  .exit-button:hover {
     box-shadow: 2px 2px 4px;
   }
   </style>
