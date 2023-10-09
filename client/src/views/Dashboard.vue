@@ -55,9 +55,12 @@
             </div>
             <!-- Box 3 -->
             <div class="col-md-4">
-              <div class="card">
-                <div class="card-body">
-                  Bar chart
+              <div class="barchart card">
+                <h3 id="barchartHeader">Spent By Category</h3>
+                <div class="barcard card-body">
+                  <div class="form-group">
+                    <ColumnChart :categories="categories"/>
+                  </div>
                 </div>
               </div>
             </div>
@@ -74,7 +77,7 @@
             </div>
             <!-- Box 5 -->
             <div class="col-md-4">
-              <div class="card">
+              <div class="card saved">
                 <div class="card-body">
                   Saved by DoughFlow
                 </div>
@@ -96,6 +99,7 @@
 </template>
 <script>
 import axios from 'axios'
+import ColumnChart from '../components/Columnchart.vue'
 import Navbar from '@/components/Navbar'
 
 export default {
@@ -116,7 +120,8 @@ export default {
     }
   },
   components: {
-    Navbar
+    Navbar,
+    ColumnChart
   },
   methods: {
     switchToBudgets() {
@@ -142,6 +147,7 @@ export default {
           this.amount = null
           this.description = ''
           this.categoryId = ''
+          this.fetchCategories()
         })
         .catch(error => {
           console.error('Error adding expense', error)
@@ -156,7 +162,6 @@ export default {
       axios.get(`http://localhost:3000/api/v1/budgets/${budgetId}/categories`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
           this.categories = response.data.categories
-          console.log('Fetched categories', this.categories)
         })
         .catch(error => {
           console.error('Error fetching categories', error)
@@ -189,7 +194,19 @@ export default {
 }
 </script>
 <style scoped>
-  /* Add custom styles for your dashboard here */
+.barchart {
+  box-shadow: 5px 5px 8px;
+}
+.barcard {
+  padding: 0px;
+}
+#barchartHeader {
+  font-size: 18px;
+  font-family: 'Roboto Slab', sans-serif;
+  font-weight: bold;
+  color: white;
+  padding: 8px;
+}
   .dashboard {
     min-height: 100vh;
     padding: 20px;
@@ -201,9 +218,12 @@ export default {
     color: white;
   }
   .card {
-  min-height: 260px;
-  max-height: 260px;
+  /*min-height: 260px;
+  max-height: 260px;*/
   background-color: #7fc9ff;
+  }
+  .saved {
+    min-height: 260px;
   }
   .register-expense {
     box-shadow: 5px 5px 8px;
@@ -235,6 +255,7 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100%;
+    min-height: 260px;
     box-shadow: 5px 5px 8px;
     border-radius: 6px;
     cursor: pointer;
@@ -252,6 +273,7 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100%;
+    min-height: 260px;
     box-shadow: 5px 5px 8px;
     border-radius: 6px;
     cursor: pointer;

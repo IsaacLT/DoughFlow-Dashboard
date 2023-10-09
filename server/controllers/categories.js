@@ -81,6 +81,7 @@ router.post('/categories/:id/expenses', authenticator, async function (req, res)
         await newExpense.save();
         // Add the new expense to the user's expenses array
         category.expenses.push(newExpense);
+        category.totalAmount += newExpense.amount
         await category.save();
         res.json(newExpense);
 });

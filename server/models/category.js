@@ -13,7 +13,11 @@ var categorySchema = new Schema({
     expenses : [{
         type: Schema.Types.ObjectId,
         ref: "expenseModel" 
-    }]
+    }],
+    totalAmount: {
+        type: Number,
+        default: 0
+    }
 });
 
 var Category = mongoose.model('category', categorySchema);
