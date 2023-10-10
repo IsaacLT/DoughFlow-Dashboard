@@ -56,9 +56,11 @@ router.put("/expenses/:id", authenticator, async (req, res) => {
         const updatedExpense = await expense.findByIdAndUpdate(req.params.id, req.body, {new: true});
         const updatedAmount = updatedExpense.amount;
         const updatedCategory = await category.findOne({_id: updatedExpense.categoryId})
-        updatedCategory.totalAmount -= currentAmount;
-        updatedCategory.totalAmount += updatedAmount;
-        updatedCategory.save();
+        if(updatedCategory) {
+            updatedCategory.totalAmount -= currentAmount;
+            updatedCategory.totalAmount += updatedAmount;
+            updatedCategory.save();
+        }
         if (!updatedExpense) {
             res.status(404).json({ error: "Expense not found" });
         } else {
