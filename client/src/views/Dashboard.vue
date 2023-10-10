@@ -1,22 +1,22 @@
 <template>
   <div>
-    <Navbar />
     <div class="dashboard">
+      <Navbar id="navbar"/>
       <main>
         <div class="container mt-4">
           <div class="row">
-            <!-- Box 1 -->
+            <!-- Register Expense Box -->
             <div class="col-md-4">
-              <div class="card">
+              <div class="expenseCard card">
                 <div class="card-body register-expense">
-                  <!-- Title-->
                   <h5 class="header-text">Register Expense</h5>
+                  <!-- Amount input -->
                   <div class="form-group">
                     <div class="input-box">
                     <input type="number" class="form-control" v-model="amount" placeholder="Amount" required>
                     </div>
                   </div>
-                  <!-- Dropdown selection-->
+                  <!-- Dropdown category selection -->
                   <div class="form-group">
                     <div class="dropdown-button-container">
                         <select class="form-control category" v-model="categoryId" required>
@@ -24,70 +24,65 @@
                         <option v-for="category in categories" :key="category._id" :value="category._id">{{ category.categoryName }}</option>
                       </select>
                       <button class="btn category-popup-button" @click="showPopup = true">+</button>
+                      <Toast ref="toast" />
                     </div>
                   </div>
+                  <!-- New category Popup -->
                   <div v-if="showPopup" class="popup">
                     <div class="form-group">
                       <input class="form-control category-input" v-model="categoryName" @keyup.enter="addCategory" placeholder="New category" />
                       <button class="btn add-category-button" @click="addCategory">Add</button>
-                      <button class="btn cancel-button" @click="showPopup = false">Cancel</button>
+                      <button class="btn exit-button" @click="showPopup = false">Exit</button>
                     </div>
                   </div>
+                  <!-- Description input -->
                   <div class="form-group">
                     <div class="input-box">
                       <input type="text" class="form-control" v-model="description" placeholder="Description" required>
                     </div>
                   </div>
-                  <!-- Button in the bottom right corner -->
+                  <!-- Add expense button -->
                   <div class="add-expense-button-container">
                     <button class="btn add-expense-button" @click="addExpense">Add</button>
                   </div>
                 </div>
               </div>
             </div>
-            <!-- Box 2 -->
+            <!-- Switch to budgets page -->
             <div class="col-md-4">
-              <div class="card">
-                <div class="card-body">
-                  Circle diagram here
+              <div class="budgetCard card clickable-box" @click="switchToBudgets">
+                <div class="card-body text-center manage-budgets">
+                  <h5 class="header-text">Manage Budgets</h5>
                 </div>
               </div>
             </div>
-            <!-- Box 3 -->
+            <!-- Switch to my account page -->
             <div class="col-md-4">
-              <div class="barchart card">
-                <h3 id="barchartHeader">Spent By Category</h3>
-                <div class="barcard card-body">
-                  <div class="form-group">
-                    <ColumnChart :categories="categories"/>
-                  </div>
+              <div class="card clickable-box" @click="switchToMyAccount">
+                <div class="card-body text-center my-account">
+                  <h5 class="header-text">My account</h5>
                 </div>
               </div>
             </div>
           </div>
           <!-- Second Row -->
           <div class="row mt-4">
-            <!-- Box 4 -->
-            <div class="col-md-4">
-              <div class="card clickable-box" @click="switchToBudgets">
-                <div class="card-body text-center manage-budgets">
-                  <h5 class="header-text">Manage Budgets</h5>
+            <!-- Radial chart Box -->
+            <div class="col-md-6">
+              <div class="radialCard card">
+                <div class="radialbar card-body">
+                    <apexchart type="radialBar" :options="chartOptions" :series="[remainingAmountPercentage]"/>
                 </div>
               </div>
             </div>
-            <!-- Box 5 -->
-            <div class="col-md-4">
-              <div class="card saved">
-                <div class="card-body">
-                  Saved by DoughFlow
-                </div>
-              </div>
-            </div>
-            <!-- Box 6 -->
-            <div class="col-md-4">
-              <div class="card clickable-box" @click="switchToMyAccount">
-                <div class="card-body text-center my-account">
-                  <h5 class="header-text">My account</h5>
+            <!-- Column chart Box -->
+            <div class="col-md-6">
+              <div class="barCard card">
+                <div class="barChart card-body">
+                  <h5 id="barchartHeader">Spent By Category</h5>
+                  <div class="form-group">
+                    <ColumnChart :categories="categories"/>
+                  </div>
                 </div>
               </div>
             </div>
@@ -101,6 +96,7 @@
 import axios from 'axios'
 import ColumnChart from '../components/Columnchart.vue'
 import Navbar from '@/components/Navbar'
+import Toast from '@/components/Toast'
 
 export default {
   name: 'Dashboard',
@@ -117,11 +113,85 @@ export default {
   computed: {
     selectedBudget() {
       return this.$store.getters.getSelectedBudget
+    },
+    remainingAmount() {
+      if (this.selectedBudget) {
+        return this.selectedBudget.amount - this.totalExpenses
+      }
+      return 0
+    },
+    remainingAmountPercentage() {
+      if (this.selectedBudget) {
+        return (this.totalExpenses() / this.selectedBudget.amount) * 100
+      }
+      return 0
+    },
+    chartOptions() {
+      return {
+        chart: {
+          type: 'radialBar',
+          toolbar: {
+            show: false
+          }
+        },
+        plotOptions: {
+          radialBar: {
+            hollow: {
+              margin: 0,
+              size: '80%'
+            },
+            track: {
+              background: '#fff',
+              strokeWidth: '95%',
+              margin: 0,
+              dropShadow: {
+                enabled: true,
+                top: -3,
+                left: 0,
+                blur: 4,
+                opacity: 0.35
+              }
+            },
+            dataLabels: {
+              show: true,
+              name: {
+                offsetY: -10,
+                show: true,
+                color: '#FFFFFF',
+                fontSize: '20px',
+                fontFamily: 'Roboto slab'
+              },
+              value: {
+                formatter: function (val) {
+                  return parseInt(val) + '% Spent'
+                },
+                color: '#FFFFFF',
+                fontSize: '30px',
+                fontFamily: 'Roboto slab',
+                show: true
+              }
+            }
+          }
+        },
+        fill: {
+          type: 'gradient',
+          gradient: {
+            type: 'horizontal',
+            inverseColors: true,
+            stops: [0, 100]
+          }
+        },
+        stroke: {
+          width: -10
+        },
+        labels: [this.selectedBudget ? (this.selectedBudget.name + ' Budget') : 'No Budget Selected']
+      }
     }
   },
   components: {
     Navbar,
-    ColumnChart
+    ColumnChart,
+    Toast
   },
   methods: {
     switchToBudgets() {
@@ -150,12 +220,14 @@ export default {
           this.fetchCategories()
         })
         .catch(error => {
-          console.error('Error adding expense', error)
+          if (error.response.status === 404) {
+            this.$refs.toast.showToast('Error adding expense', 'Amount and/or Category is missing')
+          }
         })
     },
     async fetchCategories() {
       if (!this.selectedBudget) {
-        console.error('No budget selected')
+        this.$refs.toast.showToast('No budget selected', 'Go to Manage Budgets to select/create a budget')
         return
       }
       const budgetId = this.selectedBudget._id
@@ -186,6 +258,9 @@ export default {
         .catch(error => {
           console.error('Error adding category', error)
         })
+    },
+    totalExpenses() {
+      return this.categories.reduce((sum, category) => sum + category.totalAmount, 0)
     }
   },
   mounted() {
@@ -194,40 +269,52 @@ export default {
 }
 </script>
 <style scoped>
-.barchart {
-  box-shadow: 5px 5px 8px;
-}
-.barcard {
-  padding: 0px;
-}
-#barchartHeader {
-  font-size: 18px;
-  font-family: 'Roboto Slab', sans-serif;
-  font-weight: bold;
-  color: white;
-  padding: 8px;
-}
-  .dashboard {
-    min-height: 100vh;
-    padding: 20px;
-    background-color: #E5E4E2;
+  #navbar {
+    padding-bottom: 20px;
   }
-  .header-text {
+  .row {
+    display: flex;
+    align-items: stretch;
+  }
+  .card {
+    box-shadow: 5px 5px 8px;
+    background-color: #7fc9ff;
+  }
+  .register-expense {
+    padding-top: 8px;
+  }
+  .radialCard {
+    padding: 0px;
+    align-items: center;
+    max-height: 260px;
+  }
+  .barCard {
+    align-items: center;
+    max-height: 260px;
+  }
+  .radialbar {
+    padding-bottom: 0px;
+  }
+  .barChart {
+    padding-bottom: 0px;
+  }
+  #barchartHeader {
     font-family: 'Roboto Slab', sans-serif;
     font-weight: bold;
     color: white;
+    padding-top: 8px;
+    padding-bottom: 0px;
   }
-  .card {
-  /*min-height: 260px;
-  max-height: 260px;*/
-  background-color: #7fc9ff;
+  .dashboard {
+    min-height: 100vh;
+    background-color: #E5E4E2;
+  }
+  .header-text {
+    font-weight: bold;
+    color: white;
   }
   .saved {
     min-height: 260px;
-  }
-  .register-expense {
-    box-shadow: 5px 5px 8px;
-    border-radius: 6px;
   }
   .register-expense:hover {
     box-shadow: 8px 8px 10px;
@@ -237,7 +324,6 @@ export default {
   margin-top: 10px;
   }
   .add-expense-button {
-    font-family: 'Roboto slab', sans-serif;
     background-color: #50C878;
   }
   .add-expense-button:hover {
@@ -256,7 +342,6 @@ export default {
     align-items: center;
     height: 100%;
     min-height: 260px;
-    box-shadow: 5px 5px 8px;
     border-radius: 6px;
     cursor: pointer;
   }
@@ -274,7 +359,6 @@ export default {
     align-items: center;
     height: 100%;
     min-height: 260px;
-    box-shadow: 5px 5px 8px;
     border-radius: 6px;
     cursor: pointer;
   }
@@ -293,7 +377,7 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #7fc9ff; /* Adjust the background color and opacity as needed */
+    background-color: #7fc9ff;
     display: flex;
     justify-content: center;
     z-index: 1000;
@@ -302,7 +386,6 @@ export default {
     padding-right: 10%;
   }
   .add-category-button {
-    font-family: 'Roboto slab', sans-serif;
     background-color: #50C878;
     margin-right: 10px;
     margin-top: 5px;
@@ -310,12 +393,25 @@ export default {
   .add-category-button:hover {
     box-shadow: 2px 2px 4px;
   }
-  .cancel-button {
-    font-family: 'Roboto slab', sans-serif;
+  .exit-button {
     background-color: #dc3545;
     margin-top: 5px;
   }
-  .cancel-button:hover {
+  .exit-button:hover {
     box-shadow: 2px 2px 4px;
   }
-  </style>
+  @media (max-width: 768px) {
+  .budgetCard {
+    margin-bottom: 20px;
+  }
+  .expenseCard {
+    margin-bottom: 20px;
+  }
+  .radialCard {
+    margin-bottom: 20px;
+  }
+  #barchartHeader {
+    padding: 8px;
+  }
+}
+</style>
