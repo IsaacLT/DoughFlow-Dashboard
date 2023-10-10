@@ -23,6 +23,10 @@ export default {
       return this.categories.map(category => category.totalAmount)
     },
     chartOptions() {
+      let rotationAngle = 0
+      if (this.categoryNames.length > 6) {
+        rotationAngle = -45
+      }
       return {
         chart: {
           id: 'columnchart',
@@ -33,15 +37,25 @@ export default {
         xaxis: {
           categories: this.categoryNames,
           labels: {
+            rotate: rotationAngle,
+            formatter: (value) => {
+              return value.length > 5 ? value.substr(0, 5) + '...' : value
+            },
             style: {
-              fontSize: '14px'
+              fontSize: this.xAxisFontSize,
+              fontFamily: 'Roboto slab',
+              fontWeight: 'bold',
+              colors: '#FFFFFF'
             }
           }
         },
         yaxis: {
           labels: {
             style: {
-              fontSize: '12px'
+              fontSize: '12px',
+              fontFamily: 'Roboto slab',
+              fontWeight: 'bold',
+              colors: '#FFFFFF'
             }
           }
         },
