@@ -24,7 +24,7 @@ const router = new Router({
       component: BudgetManagement
     },
     {
-      path: '/login',
+      path: '/',
       name: 'login',
       component: Login
     },
@@ -34,7 +34,7 @@ const router = new Router({
       component: RegisterAccount
     },
     {
-      path: '/my-account/:username',
+      path: '/my-account',
       name: 'my-account',
       component: ManageAccount,
       meta: { requiresAuth: true }

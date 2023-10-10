@@ -111,24 +111,23 @@ export default {
     ...mapGetters(['getSelectedBudget'])
   },
   mounted() {
-    axios.get(`${this.URL}/budgets`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
-      .then(response => {
-        if (Array.isArray(response.data)) {
-          this.budgets = response.data
-        } else {
-          this.budgets = [] // If the API doesn't return an array, initialize as empty array
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching budgets:', error)
-      })
+    this.getBudgets()
   },
-
   methods: {
-
+    async getBudgets() {
+      const username = localStorage.getItem('username')
+      axios.get(`http://localhost:3000/api/v1/users/${username}/budgets`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
+        .then(response => {
+          this.budgets = response.data.budgets
+        })
+        .catch(error => {
+          console.error('Error fetching categories', error)
+        })
+    },
     async createBudget() {
+      const username = localStorage.getItem('username')
       try {
-        const response = await fetch(`${this.URL}/budgets`, {
+        const response = await fetch(`${this.URL}/users/${username}/budgets`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -224,8 +223,9 @@ export default {
       if (!confirmed) {
         return
       }
+      const username = localStorage.getItem('username')
       try {
-        const response = await fetch(`${this.URL}/budgets/`, {
+        const response = await fetch(`${this.URL}/users/${username}/budgets/`, {
           method: 'DELETE',
           headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
         })

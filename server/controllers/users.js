@@ -247,4 +247,19 @@ router.delete('/users/:username/budgets/:id', authenticator, async function (req
     res.json({message: 'Budget deleted succesfully', budget});
 });
 
+router.delete('/users/:username/budgets', authenticator, async function (req, res) {
+    const username = req.params.username;
+    // Find the user by username
+    const user = await User.findOne({ username });
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+    // Find the expense by its ID and ensure it belongs to the user
+    const budget = await Budget.deleteMany({ user: user._id})
+    if (!budget) {
+        return res.status(404).json({ message: 'Budget not found'});
+    }
+    res.json({message: 'All budgets deleted succesfully', budget});
+});
+
 module.exports = router;
