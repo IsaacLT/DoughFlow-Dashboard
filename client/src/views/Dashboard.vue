@@ -202,7 +202,6 @@ export default {
 }
 #barchartHeader {
   font-size: 18px;
-  font-family: 'Roboto Slab', sans-serif;
   font-weight: bold;
   color: white;
   padding: 8px;
@@ -213,7 +212,6 @@ export default {
     background-color: #E5E4E2;
   }
   .header-text {
-    font-family: 'Roboto Slab', sans-serif;
     font-weight: bold;
     color: white;
   }
@@ -237,7 +235,6 @@ export default {
   margin-top: 10px;
   }
   .add-expense-button {
-    font-family: 'Roboto slab', sans-serif;
     background-color: #50C878;
   }
   .add-expense-button:hover {
@@ -293,7 +290,7 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #7fc9ff; /* Adjust the background color and opacity as needed */
+    background-color: #7fc9ff;
     display: flex;
     justify-content: center;
     z-index: 1000;
@@ -302,7 +299,6 @@ export default {
     padding-right: 10%;
   }
   .add-category-button {
-    font-family: 'Roboto slab', sans-serif;
     background-color: #50C878;
     margin-right: 10px;
     margin-top: 5px;
@@ -311,7 +307,6 @@ export default {
     box-shadow: 2px 2px 4px;
   }
   .cancel-button {
-    font-family: 'Roboto slab', sans-serif;
     background-color: #dc3545;
     margin-top: 5px;
   }

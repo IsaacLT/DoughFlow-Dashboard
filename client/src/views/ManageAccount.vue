@@ -1,13 +1,13 @@
 <template>
   <div>
     <Navbar />
-    <div class="fullPage">
+    <div class="accountPage">
       <div class="container d-flex align-items-center justify-content-center min-vh-100">
         <div class="row">
           <div class="col-md-6 order-2 order-md-1">
             <div class="fullForm card p-4">
-              <h2 class="mb-4">Change Password</h2>
-        <form @submit.prevent="changePassword">
+              <h2 id="heading" class="mb-4">Change Password</h2>
+        <form id="accountForm" @submit.prevent="changePassword">
         <div class="input-box mb-3 position-relative">
           <input class="form-control ps-5" type="password" v-model="password" placeholder="Enter New Password" required />
           <i class="bi bi-lock position-absolute top-50 start-0 translate-middle-y ms-2"></i>
@@ -100,6 +100,11 @@ export default {
 }
 </script>
 <style scoped>
+.accountPage {
+    min-height: 100vh;
+    padding: 20px;
+    background-color: #E5E4E2;
+  }
 #deleteButton {
     background-color: rgb(218, 0, 0);
     color: white;
@@ -111,5 +116,13 @@ export default {
 }
 .form-control {
   padding-left: 20px;
+}
+.fullForm {
+  background-color: #7fc9ff;
+}
+#heading {
+  color: #ffffff;
+  font-family: 'Roboto Slab', sans-serif;
+  font-weight: bold;
 }
 </style>
