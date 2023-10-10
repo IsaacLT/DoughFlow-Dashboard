@@ -310,7 +310,6 @@ export default {
     background-color: #E5E4E2;
   }
   .header-text {
-    font-family: 'Roboto Slab', sans-serif;
     font-weight: bold;
     color: white;
   }
@@ -325,7 +324,6 @@ export default {
   margin-top: 10px;
   }
   .add-expense-button {
-    font-family: 'Roboto slab', sans-serif;
     background-color: #50C878;
   }
   .add-expense-button:hover {
@@ -388,7 +386,6 @@ export default {
     padding-right: 10%;
   }
   .add-category-button {
-    font-family: 'Roboto slab', sans-serif;
     background-color: #50C878;
     margin-right: 10px;
     margin-top: 5px;
@@ -397,7 +394,6 @@ export default {
     box-shadow: 2px 2px 4px;
   }
   .exit-button {
-    font-family: 'Roboto slab', sans-serif;
     background-color: #dc3545;
     margin-top: 5px;
   }

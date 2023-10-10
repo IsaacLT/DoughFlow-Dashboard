@@ -18,7 +18,7 @@
           <input class="btn btn-primary w-100" type="submit" value="Register" />
         </div>
         <div class="text-center">
-          <h3>Already have an account? <a href="login">Login</a></h3>
+          <h3>Already have an account? <a href="/">Login</a></h3>
         </div>
         <Toast ref="toast" />
       </form>
@@ -54,7 +54,7 @@ export default {
       })
         .then((response) => {
           if (response.status === 200) {
-            this.$router.push({ name: 'login' })
+            this.$router.push({ name: '/' })
           }
         })
         .catch((error) => {

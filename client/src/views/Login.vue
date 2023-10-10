@@ -55,7 +55,8 @@ export default {
         .then((response) => {
           if (response.status === 200) {
             localStorage.setItem('token', response.data.token)
-            if (this.$route.path !== '/') this.$router.push({ name: 'my-account', params: { username: this.username } })
+            localStorage.setItem('username', this.username)
+            if (this.$route.path !== '/dashboard') this.$router.push({ name: 'dashboard' })
           }
         })
         .catch((error) => {
