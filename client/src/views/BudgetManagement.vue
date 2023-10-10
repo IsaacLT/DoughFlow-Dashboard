@@ -1,7 +1,6 @@
 <template>
   <div class="everything">
     <Navbar id="navBar"/>
-
     <div class="budget-management container-fluid">
       <div class="row">
 
@@ -27,7 +26,7 @@
             <form @submit.prevent="createBudget" class="form-inline">
               <div class="create-budget-fields">
               <input v-model="newBudget.name" placeholder="Budget Name" required class="form-control mr-2" maxlength="10">
-              <input v-model.number="newBudget.amount" placeholder="Amount" required class="form-control mr-2" maxlength="8">
+              <input v-model.number="newBudget.amount" placeholder="Amount" type="number" required class="form-control mr-2" maxlength="8">
               <button type="submit" class="btn btn-primary">Add Budget</button>
             </div>
             </form>
@@ -74,7 +73,7 @@
             </div>
           </div>
         </div>
-
+        <Toast ref="toast" />
       </div>
       </div>
   </div>
@@ -84,6 +83,7 @@
 import axios from 'axios'
 import Navbar from '../components/Navbar.vue'
 import { mapGetters } from 'vuex'
+import Toast from '../components/Toast.vue'
 
 export default {
   name: 'BudgetManagement',
@@ -105,7 +105,8 @@ export default {
   },
 
   components: {
-    Navbar
+    Navbar,
+    Toast
   },
   computed: {
     ...mapGetters(['getSelectedBudget'])
@@ -150,7 +151,8 @@ export default {
 
     selectBudget(budget) {
       this.$store.dispatch('updateSelectedBudget', budget)
-      alert(`${budget.name} is now set as your budget.`)
+      const budgetName = `${budget.name}`
+      this.$refs.toast.showToast('Budget Chosen', budgetName + ' is now set as your budget')
     },
 
     async fetchCategoriesForBudget(budgetId) {
@@ -295,12 +297,12 @@ export default {
 
         if (response.status === 200) {
           console.log('After successful update:', this.showUpdateForm)
-          alert('Expense updated successfully!')
+          this.$refs.toast.showToast('Expense Update', 'Expense updated successfully!')
           // Optionally update the local data or re-fetch the data
           this.showUpdateForm = false
           console.log('After setting to false:', this.showUpdateForm)
         } else {
-          alert('Error updating the expense!')
+          this.$refs.toast.showToast('Expense Error', 'Error updating the expense!')
         }
       } catch (error) {
         console.error('Error updating expense:', error)
@@ -378,10 +380,11 @@ export default {
 <style scoped>
 .budget-management {
   display: flex;
-  flex-direction: column;;
+  flex-direction: column;
   align-items: stretch;
-  height: 100vh;
-  background: #7fc9ff;
+  border-top: 20px outset #E5E4E2;
+  height: 93.55vh;
+  background: #E5E4E2;
 }
 .budget-management .row{
   flex-grow: 1;
@@ -407,9 +410,11 @@ export default {
   flex-direction: column;
   /*height: 100%;*/
   position: relative;
+  border-right: 10px solid #E5E4E2;
   flex-shrink: 1;
   justify-content: space;
   min-width: 20px;
+  padding: 5px;
   background:#1f8cdb;
 }
 
@@ -428,6 +433,12 @@ export default {
   flex-wrap: nowrap;
 }
 
+@media (max-width: 764px) {
+    .left-menu {
+        border-right: none;
+        border-bottom: 10px solid #E5E4E2;
+    }
+}
 .right-content {
   display: flex;
   flex: 2;
@@ -448,7 +459,6 @@ export default {
   }
 }
 
-/* Remove bullet point dots from list*/
 .left-menu ul {
   list-style-type: none;
 }
