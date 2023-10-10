@@ -1,18 +1,37 @@
-// Import required dependencies
+
 const express = require('express');
 const router = express.Router();
 const Budget = require('../models/budget');
 const Category = require('../models/category');
 const authenticator = require('../authenticator');
 
+//Helper method that adds the wanted HATEOAS links as part of the object
+function getBudgetLinks(budgetId) {
+    return {
+        self: {
+            href: `http://localhost:3000/api/v1/budgets/${budgetId}`
+        },
+        delete: {
+            href: `http://localhost:3000/api/v1/budgets/${budgetId}`,
+            method: 'DELETE'
+        }
+    };
+}
+
+
 // Create a new budget instance
 router.post('/budgets', authenticator, async (req,res) => {                              
         if (!req.body.name || isNaN(req.body.amount) || req.body.amount <= 0) {         // Check if budget has name and amount. ("NaN" = not a number)
             return res.status(400).json({ error: 'Invalid budget properties'})
         } else {
+            //Add the HATEOAS links to the budget object when creating it immediately
             const budget = new Budget(req.body);  
-            await budget.save()                     // Save the budget
-            res.json(budget);                       // Send the created budget as the response
+            await budget.save();                     // Save the budget
+            const budgetWithLinks = {
+                ...budget._doc,
+                links: getBudgetLinks(budget._id)
+            }
+            res.json(budgetWithLinks);                       // Send the created budget as the response
         } 
 });
 
@@ -22,7 +41,11 @@ router.get('/budgets', authenticator, async (req,res) => {
     if (budgets.length == 0) {                    // If no budgets exist, respond with object not found error
         return res.status(404).json({error: 'No budgets exist.'})
     } else {
-    res.json(budgets);                            // Send the retrieved budgets as the respose
+        const budgetsWithLinks = budgets.map(budget => ({
+            ...budget._doc, 
+            links: getBudgetLinks(budget._id)
+        }));
+    res.json(budgetsWithLinks);                            // Send the retrieved budgets as the respose
     }
 });
 
@@ -32,7 +55,10 @@ router.get('/budgets/:id', authenticator, async (req, res) => {
     if (!budget) {                                          // If no budget exists, respond with object not found error
         return res.status(404).json({ error: 'Budget not found'});
     } else {
-        res.json(budget);                                   // Send the retrieved budget as e response
+        res.json({
+            ...budget._doc,
+            links: getBudgetLinks(req.params.id)
+        });                                   // Send the retrieved budget as e response
     }
 });
 
