@@ -5,7 +5,7 @@
       <img id="logo" src="../assets/logonotext.png" alt="Logo" />
     </router-link>
     <h2 class="header">DoughFlow</h2>
-    <router-link to="/login" @click="handleLogout">
+    <router-link to="/" @click="handleLogout">
       <h3 class="header">Logout</h3>
     </router-link>
     </nav>

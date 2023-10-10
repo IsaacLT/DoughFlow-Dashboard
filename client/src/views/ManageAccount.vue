@@ -58,10 +58,10 @@ export default {
         this.$refs.toast.showToast('Password Error', 'The password does not match')
         return
       }
-
+      const username = localStorage.getItem('username')
       try {
         const response = await axios.patch(
-      `http://localhost:3000/api/v1/users/${this.$route.params.username}`,
+      `http://localhost:3000/api/v1/users/${username}`,
       { password: this.password },
       { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } }
         )

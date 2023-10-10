@@ -2914,6 +2914,162 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "New budget from user Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"response = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"id\", response._id);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Summer 1\",\r\n    \"amount\": 40000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/users/:username/budgets",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								":username",
+								"budgets"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "user1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "New budget from user Copy 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"response = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"id\", response._id);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Summer budget\",\r\n    \"amount\": 40000\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/users/:username/budgets",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								":username",
+								"budgets"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "user1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All budgets from user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "authorization",
+								"value": "{{access_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/users/:username/budgets",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								":username",
+								"budgets"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "user1"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
