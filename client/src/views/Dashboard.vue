@@ -1,22 +1,22 @@
 <template>
   <div>
-    <Navbar />
     <div class="dashboard">
+      <Navbar id="navbar"/>
       <main>
         <div class="container mt-4">
           <div class="row">
-            <!-- Box 1 -->
+            <!-- Register Expense Box -->
             <div class="col-md-4">
-              <div class="card">
+              <div class="expenseCard card">
                 <div class="card-body register-expense">
-                  <!-- Title-->
                   <h5 class="header-text">Register Expense</h5>
+                  <!-- Amount input -->
                   <div class="form-group">
                     <div class="input-box">
                     <input type="number" class="form-control" v-model="amount" placeholder="Amount" required>
                     </div>
                   </div>
-                  <!-- Dropdown selection-->
+                  <!-- Dropdown category selection -->
                   <div class="form-group">
                     <div class="dropdown-button-container">
                         <select class="form-control category" v-model="categoryId" required>
@@ -24,8 +24,10 @@
                         <option v-for="category in categories" :key="category._id" :value="category._id">{{ category.categoryName }}</option>
                       </select>
                       <button class="btn category-popup-button" @click="showPopup = true">+</button>
+                      <Toast ref="toast" />
                     </div>
                   </div>
+                  <!-- New category Popup -->
                   <div v-if="showPopup" class="popup">
                     <div class="form-group">
                       <input class="form-control category-input" v-model="categoryName" @keyup.enter="addCategory" placeholder="New category" />
@@ -33,60 +35,54 @@
                       <button class="btn exit-button" @click="showPopup = false">Exit</button>
                     </div>
                   </div>
+                  <!-- Description input -->
                   <div class="form-group">
                     <div class="input-box">
                       <input type="text" class="form-control" v-model="description" placeholder="Description" required>
                     </div>
                   </div>
-                  <!-- Button in the bottom right corner -->
+                  <!-- Add expense button -->
                   <div class="add-expense-button-container">
                     <button class="btn add-expense-button" @click="addExpense">Add</button>
                   </div>
                 </div>
               </div>
             </div>
-            <!-- Box 2 -->
+            <!-- Switch to budgets page -->
             <div class="col-md-4">
-              <div class="card">
-                <div class="card-body">
-                  <div class="form-group">
-                    <apexchart type="radialBar" :options="chartOptions" :series="[remainingAmountPercentage]"/>
-                  </div>
+              <div class="budgetCard card clickable-box" @click="switchToBudgets">
+                <div class="card-body text-center manage-budgets">
+                  <h5 class="header-text">Manage Budgets</h5>
                 </div>
               </div>
             </div>
-            <!-- Box 3 -->
+            <!-- Switch to my account page -->
             <div class="col-md-4">
-              <div class="card">
-                <div class="card-body">
-                  Bar chart
+              <div class="card clickable-box" @click="switchToMyAccount">
+                <div class="card-body text-center my-account">
+                  <h5 class="header-text">My account</h5>
                 </div>
               </div>
             </div>
           </div>
           <!-- Second Row -->
           <div class="row mt-4">
-            <!-- Box 4 -->
-            <div class="col-md-4">
-              <div class="card clickable-box" @click="switchToBudgets">
-                <div class="card-body text-center manage-budgets">
-                  <h5 class="header-text">Manage Budgets</h5>
+            <!-- Radial chart Box -->
+            <div class="col-md-6">
+              <div class="radialCard card">
+                <div class="radialbar card-body">
+                    <apexchart type="radialBar" :options="chartOptions" :series="[remainingAmountPercentage]"/>
                 </div>
               </div>
             </div>
-            <!-- Box 5 -->
-            <div class="col-md-4">
-              <div class="card">
-                <div class="card-body">
-                  Saved by DoughFlow
-                </div>
-              </div>
-            </div>
-            <!-- Box 6 -->
-            <div class="col-md-4">
-              <div class="card clickable-box" @click="switchToMyAccount">
-                <div class="card-body text-center my-account">
-                  <h5 class="header-text">My account</h5>
+            <!-- Column chart Box -->
+            <div class="col-md-6">
+              <div class="barCard card">
+                <div class="barChart card-body">
+                  <h5 id="barchartHeader">Spent By Category</h5>
+                  <div class="form-group">
+                    <ColumnChart :categories="categories"/>
+                  </div>
                 </div>
               </div>
             </div>
@@ -98,7 +94,9 @@
 </template>
 <script>
 import axios from 'axios'
+import ColumnChart from '../components/Columnchart.vue'
 import Navbar from '@/components/Navbar'
+import Toast from '@/components/Toast'
 
 export default {
   name: 'Dashboard',
@@ -165,7 +163,7 @@ export default {
               },
               value: {
                 formatter: function (val) {
-                  return parseInt(val) + '%'
+                  return parseInt(val) + '% Spent'
                 },
                 color: '#FFFFFF',
                 fontSize: '30px',
@@ -178,26 +176,22 @@ export default {
         fill: {
           type: 'gradient',
           gradient: {
-            shade: 'dark',
             type: 'horizontal',
-            shadeIntensity: 0.5,
-            gradientToColors: ['#ABE5A1'],
             inverseColors: true,
-            opacityFrom: 1,
-            opacityTo: 1,
             stops: [0, 100]
           }
         },
         stroke: {
-          lineCap: 'round',
           width: -10
         },
-        labels: [this.selectedBudget ? this.selectedBudget.name : 'No Budget Selected']
+        labels: [this.selectedBudget ? (this.selectedBudget.name + ' Budget') : 'No Budget Selected']
       }
     }
   },
   components: {
-    Navbar
+    Navbar,
+    ColumnChart,
+    Toast
   },
   methods: {
     switchToBudgets() {
@@ -223,21 +217,23 @@ export default {
           this.amount = null
           this.description = ''
           this.categoryId = ''
+          this.fetchCategories()
         })
         .catch(error => {
-          console.error('Error adding expense', error)
+          if (error.response.status === 404) {
+            this.$refs.toast.showToast('Error adding expense', 'Amount and/or Category is missing')
+          }
         })
     },
     async fetchCategories() {
       if (!this.selectedBudget) {
-        console.error('No budget selected')
+        this.$refs.toast.showToast('No budget selected', 'Go to Manage Budgets to select/create a budget')
         return
       }
       const budgetId = this.selectedBudget._id
       axios.get(`http://localhost:3000/api/v1/budgets/${budgetId}/categories`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
           this.categories = response.data.categories
-          console.log('Fetched categories', this.categories)
         })
         .catch(error => {
           console.error('Error fetching categories', error)
@@ -264,8 +260,7 @@ export default {
         })
     },
     totalExpenses() {
-      // Implement this function
-      return 5000
+      return this.categories.reduce((sum, category) => sum + category.totalAmount, 0)
     }
   },
   mounted() {
@@ -274,10 +269,44 @@ export default {
 }
 </script>
 <style scoped>
-  /* Add custom styles for your dashboard here */
+  #navbar {
+    padding-bottom: 20px;
+  }
+  .row {
+    display: flex;
+    align-items: stretch;
+  }
+  .card {
+    box-shadow: 5px 5px 8px;
+    background-color: #7fc9ff;
+  }
+  .register-expense {
+    padding-top: 8px;
+  }
+  .radialCard {
+    padding: 0px;
+    align-items: center;
+    max-height: 260px;
+  }
+  .barCard {
+    align-items: center;
+    max-height: 260px;
+  }
+  .radialbar {
+    padding-bottom: 0px;
+  }
+  .barChart {
+    padding-bottom: 0px;
+  }
+  #barchartHeader {
+    font-family: 'Roboto Slab', sans-serif;
+    font-weight: bold;
+    color: white;
+    padding-top: 8px;
+    padding-bottom: 0px;
+  }
   .dashboard {
     min-height: 100vh;
-    padding: 20px;
     background-color: #E5E4E2;
   }
   .header-text {
@@ -285,11 +314,8 @@ export default {
     font-weight: bold;
     color: white;
   }
-  .card {
-  min-height: 260px;
-  max-height: 260px;
-  background-color: #7fc9ff;
-  box-shadow: 5px 5px 8px;
+  .saved {
+    min-height: 260px;
   }
   .register-expense:hover {
     box-shadow: 8px 8px 10px;
@@ -317,6 +343,8 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100%;
+    min-height: 260px;
+    border-radius: 6px;
     cursor: pointer;
   }
   .my-account:hover {
@@ -332,6 +360,8 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100%;
+    min-height: 260px;
+    border-radius: 6px;
     cursor: pointer;
   }
   .manage-budgets:hover {
@@ -349,7 +379,7 @@ export default {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #7fc9ff; /* Adjust the background color and opacity as needed */
+    background-color: #7fc9ff;
     display: flex;
     justify-content: center;
     z-index: 1000;
@@ -374,4 +404,18 @@ export default {
   .exit-button:hover {
     box-shadow: 2px 2px 4px;
   }
-  </style>
+  @media (max-width: 768px) {
+  .budgetCard {
+    margin-bottom: 20px;
+  }
+  .expenseCard {
+    margin-bottom: 20px;
+  }
+  .radialCard {
+    margin-bottom: 20px;
+  }
+  #barchartHeader {
+    padding: 8px;
+  }
+}
+</style>

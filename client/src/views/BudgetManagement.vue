@@ -13,7 +13,7 @@
             <div class="budget-box p-2 mb-3" @click.stop="handleBudgetClick(budget._id)">
                 <div>{{ budget.name }} - ${{ budget.amount }}</div>
                 <button class="btn btn-info btn-sm ml-2" @click.stop="selectBudget(budget)">Select Budget</button>
-                <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteBudget(budget._id)">Delete</button>
+                <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteBudget(budget)">Delete</button>
             </div>
         </li>
     </ul>
@@ -39,15 +39,28 @@
               <ul class="list-unstyled">
                 <li v-for="category in categories" :key="category._id" class="p-2 mb-3 border rounded">
                   <div class="category-container">
-                    <div class="category-box">
-                      <div class="category-name">
+                    <div class="category-name">
                         <strong>{{ category.categoryName }}</strong>
                       </div>
                     <div>Total amount spent: {{ sumExpenses(category.expenses) }}kr</div>
+                    <div class="category-box">
+
                     <ul class="list-unstyled">
                       <li v-for="expense in category.expenses" :key="expense._id" class="mt-2">
+                        <div class="expense-container" @click="showUpdateButton(expense._id)">
                         {{ expense.description }}: {{ expense.amount }}kr
                         <div>{{ formatDate(expense.date) }}</div>
+
+                        <button v-if="showUpdateButtonId === expense._id" @click.stop="toggleUpdateForm(expense._id)">Update Expense</button>
+                        <div v-if="showUpdateForm === expense._id">
+
+                        <input v-model="expense.amount" placeholder="Amount" @click.stop>
+                        <input v-model="expense.description" placeholder="Description" @click.stop>
+                        <input :value="formatDateForInput(expense.date)" @input="expense.date = $event.target.value" type="date" placeholder="Date" @click.stop>
+                        <button @click="updateExpense(expense)">Save</button>
+                        <button @click.stop="deleteExpense(category, expense._id)">Delete Expense</button>
+                      </div>
+                      </div>
                       </li>
                     </ul>
                   </div>
@@ -84,9 +97,13 @@ export default {
       selectedBudget: null,
       categories: [],
       expenses: [],
-      URL: 'http://localhost:3000/api/v1'
+      URL: 'http://localhost:3000/api/v1',
+      // stores the currently clicked expense Id
+      showUpdateForm: null,
+      showUpdateButtonId: null
     }
   },
+
   components: {
     Navbar
   },
@@ -106,6 +123,7 @@ export default {
         console.error('Error fetching budgets:', error)
       })
   },
+
   methods: {
 
     async createBudget() {
@@ -170,19 +188,28 @@ export default {
       }
     },
 
-    async deleteBudget(id) {
+    async deleteBudget(budget) {
+      console.log('Budget data:', budget)
+
+      // Check so that the budget object actually contains hateoas links
+      if (!budget.links || !budget.links.delete) {
+        alert('Delete action is not available for this budget.')
+        return
+      }
+
       const confirmed = window.confirm('Are you sure you want to delete this budget? This action cannot be undone!')
       if (!confirmed) {
         return
       }
       try {
-        const response = await fetch(`${this.URL}/budgets/${id}`, {
+        // Instead of using a hardcoded url, use the HATEOAS link that's part of the budget object to delet
+        const response = await fetch(budget.links.delete.href, {
           method: 'DELETE',
           headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
         })
         if (response.ok) {
           // Remove the deleted budget from the list
-          this.budgets = this.budgets.filter(budget => budget._id !== id)
+          this.budgets = this.budgets.filter(b => b._id !== budget._id)
         } else {
           const data = await response.json()
           alert(data.error)
@@ -191,6 +218,7 @@ export default {
         console.error('Error deleting budget:', error)
       }
     },
+
     async deleteAllBudgets() {
       const confirmed = window.confirm('Are you sure you want to delete all of your budgets? This step is irrevocable!')
       if (!confirmed) {
@@ -252,16 +280,99 @@ export default {
         console.error('Error fetching expenses by category:', error)
       }
     },
-    sumExpenses(expenses) {
-      return expenses.reduce((total, expense) => total + expense.amount, 0).toFixed(2)
+
+    async updateExpense(expenseToUpdate) {
+      try {
+        const updatedData = {
+          amount: parseFloat(expenseToUpdate.amount),
+          description: expenseToUpdate.description,
+          date: new Date(expenseToUpdate.date).toISOString()
+        }
+
+        const response = await axios.put(`${this.URL}/expenses/${expenseToUpdate._id}`, updatedData, {
+          headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
+        })
+
+        if (response.status === 200) {
+          console.log('After successful update:', this.showUpdateForm)
+          alert('Expense updated successfully!')
+          // Optionally update the local data or re-fetch the data
+          this.showUpdateForm = false
+          console.log('After setting to false:', this.showUpdateForm)
+        } else {
+          alert('Error updating the expense!')
+        }
+      } catch (error) {
+        console.error('Error updating expense:', error)
+      }
     },
+
+    async deleteExpense(category, expenseId) {
+      const confirmed = window.confirm('Are you sure you want to delete this expense? This action cannot be undone!')
+      if (!confirmed) {
+        return
+      }
+
+      try {
+        const response = await fetch(`${this.URL}/expenses/${expenseId}`, {
+          method: 'DELETE',
+          headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
+        })
+
+        if (response.ok) {
+          // Find the category within your categories array
+          const categoryIndex = this.categories.indexOf(category)
+          if (categoryIndex > -1) {
+            // Update expenses for the found category
+            this.categories[categoryIndex].expenses = this.categories[categoryIndex].expenses.filter(expense => expense._id !== expenseId)
+          }
+        } else {
+          const data = await response.json()
+          alert(data.error)
+        }
+      } catch (error) {
+        console.error('Error deleting category:', error)
+      }
+    },
+
+    toggleUpdateForm(expenseId) {
+      if (this.showUpdateForm === expenseId) {
+      // If the form the currently chosen expense is shown, hide it
+        this.showUpdateForm = null
+      } else {
+      // Otherwise, show it
+        this.showUpdateForm = expenseId
+      }
+    },
+
+    showUpdateButton(expenseId) {
+      if (this.showUpdateButtonId === expenseId) {
+        this.showUpdateButtonId = null
+      } else {
+        this.showUpdateButtonId = expenseId
+        this.showUpdateForm = null // Ensure form is hidden when showing update button
+      }
+    },
+
+    sumExpenses(expenses) {
+      return expenses.reduce((total, expense) => {
+        const amount = parseFloat(expense.amount)
+        return isNaN(amount) ? total : total + amount
+      }, 0).toFixed(2)
+    },
+
     formatDate(dateString) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' }
       return new Date(dateString).toLocaleDateString(undefined, options)
-    }
+    },
 
+    formatDateForInput(dateString) {
+      const date = new Date(dateString)
+      return date.toISOString().split('T')[0]
+    }
   }
 }
+
 </script>
 
 <style scoped>
@@ -374,8 +485,9 @@ export default {
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.3s;
-    /*max-height: 200px;*/
-    /*overflow-y: auto;*/
+    min-height: 50px;
+    max-height: 200px;
+    overflow-y: auto;
 
     &:hover {
         background-color: #53b1c1;
@@ -388,7 +500,7 @@ export default {
   align-items: center;
 }
 .delete-category-button {
-  margin-top: 10px;
+  margin-top: 30px;
   display: flex;
   flex-direction: column;
   align-items: center;
