@@ -9,6 +9,20 @@ const config = require('../config');
 var methodOverride = require('method-override');
 router.use(methodOverride("X-HTTP-Method-Override"));
 
+//Helper method that adds the wanted HATEOAS links as part of the budget within the context of a user
+function getUserBudgetLinks(username, budgetId) {
+    return {
+        self: {
+            href: `http://localhost:3000/api/v1/users/${username}/budgets/${budgetId}`
+        },
+        delete: {
+            href: `http://localhost:3000/api/v1/users/${username}/budgets/${budgetId}`,
+            method: 'DELETE'
+        }
+    };
+}
+
+
 router.post('/login', async function (req, res) {
     try {
     const username = req.body.username;
@@ -220,39 +234,58 @@ router.delete('/users/:username/expenses/:id', authenticator, async function (re
 router.post('/users/:username/budgets', authenticator, async function (req, res) {
     try {
     const username = req.params.username;
-        // Find the user by username
+    // Find the user by username
     const user = await User.findOne({ username });
-
     if (!user) {
         return res.status(404).json({ message: 'User not found' });
-        }
-        // Create a new expense based on the request body
-        const newBudget = new Budget({
-            name: req.body.name,
-            amount: req.body.amount,
-            user: user._id,
-        });
-        // Save the new expense
-        await newBudget.save();
-        // Add the new expense to the user's expenses array
-        user.budgets.push(newBudget);
-        await user.save();
-        res.json(newBudget);
+    }
+    // Create a new budget based on the request body
+    const newBudget = new Budget({
+        name: req.body.name,
+        amount: req.body.amount,
+        user: user._id,
+    });
+    // Save the new budget
+    await newBudget.save();
+    // Add the new budget to the user's budgets array
+    user.budgets.push(newBudget);
+    await user.save();
+    // Add the HATEOAS links to the budget object before sending the response
+    const budgetWithLinks = {
+        ...newBudget._doc,
+        links: getUserBudgetLinks(username, newBudget._id)
+    }
+    res.json(budgetWithLinks);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
 
+
 router.get('/users/:username/budgets', authenticator, async function (req, res) {
     try {
     const username = req.params.username;
-        // Query the database to retrieve a user by ID
-        const user = await User.findOne({ username }).populate("budgets");
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        // Send the retrieved user data as the response
-        res.json(user);
+    
+    // Query the database to retrieve a user by username
+    const user = await User.findOne({ username });
+    if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Fetch the budgets associated with this user
+    const budgets = await Budget.find({ user: user._id });
+
+    if (budgets.length == 0) {
+        return res.status(404).json({ message: 'No budgets exist for this user.' });
+    } 
+
+    // Map over the budgets to add the HATEOAS links
+    const budgetsWithLinks = budgets.map(budget => ({
+        ...budget._doc, 
+        links: getUserBudgetLinks(username, budget._id)
+    }));
+
+    res.json(budgetsWithLinks);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -278,6 +311,7 @@ router.get('/users/:username/budgets/:id', authenticator, async function (req, r
     }
 });
 
+//Delete a single budget by id
 router.delete('/users/:username/budgets/:id', authenticator, async function (req, res) {
     try {
     const username = req.params.username;
@@ -292,7 +326,7 @@ router.delete('/users/:username/budgets/:id', authenticator, async function (req
     if (!budget) {
         return res.status(404).json({ message: 'Budget not found'});
     }
-    await Expense.deleteOne(budget);
+    await Budget.deleteOne(budget);
     res.json({message: 'Budget deleted succesfully', budget});
     } catch (err) {
         res.status(500).json({ error: err.message });

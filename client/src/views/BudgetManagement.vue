@@ -11,7 +11,7 @@
         <li v-for="budget in budgets" :key="budget._id">
             <div class="budget-box p-2 mb-3" @click.stop="handleBudgetClick(budget._id)">
                 <div>{{ budget.name }} - ${{ budget.amount }}</div>
-                <button class="btn btn-info btn-sm ml-2" @click.stop="selectBudget(budget)">Select Budget</button>
+                <button class="btn btn-info btn-sm ml-2" @click.stop="selectBudget(budget); handleBudgetClick(budget._id)">Select Budget</button>
                 <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteBudget(budget)">Delete</button>
             </div>
         </li>
@@ -50,14 +50,14 @@
                         {{ expense.description }}: {{ expense.amount }}kr
                         <div>{{ formatDate(expense.date) }}</div>
 
-                        <button v-if="showUpdateButtonId === expense._id" @click.stop="toggleUpdateForm(expense._id)">Update Expense</button>
+                        <button v-if="showUpdateButtonId === expense._id" class="btn btn-info btn-sm ml-2 t-1 b-2" @click.stop="toggleUpdateForm(expense._id)">Update Expense</button>
                         <div v-if="showUpdateForm === expense._id">
 
-                        <input v-model="expense.amount" placeholder="Amount" @click.stop>
-                        <input v-model="expense.description" placeholder="Description" @click.stop>
+                        <input v-model="expense.amount" placeholder="Amount" @click.stop class="expense-form">
+                        <input v-model="expense.description" placeholder="Description" @click.stop class="expense-form">
                         <input :value="formatDateForInput(expense.date)" @input="expense.date = $event.target.value" type="date" placeholder="Date" @click.stop>
-                        <button @click="updateExpense(expense)">Save</button>
-                        <button @click.stop="deleteExpense(category, expense._id)">Delete Expense</button>
+                        <button class="save-expense-button btn btn-info btn-sm ml-2 t-1 b-2" @click="updateExpense(expense)">Save</button>
+                        <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteExpense(category, expense._id)">Delete Expense</button>
                       </div>
                       </div>
                       </li>
@@ -119,7 +119,7 @@ export default {
       const username = localStorage.getItem('username')
       Api.get(`/users/${username}/budgets`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
-          this.budgets = response.data.budgets
+          this.budgets = response.data
         })
         .catch(error => {
           console.error('Error fetching categories', error)
@@ -220,6 +220,7 @@ export default {
       }
     },
 
+    // Delete all of the budgets for this user
     async deleteAllBudgets() {
       const confirmed = window.confirm('Are you sure you want to delete all of your budgets? This step is irrevocable!')
       if (!confirmed) {
@@ -245,6 +246,7 @@ export default {
       }
     },
 
+    // Delete single category from category list for that budget
     async deleteCategory(categoryId) {
       const confirmed = window.confirm('Are you sure you want to delete this category? This action cannot be undone!')
       if (!confirmed) {
@@ -269,6 +271,7 @@ export default {
       }
     },
 
+    // Get expenses belonging to specific category
     async fetchExpensesByCategory(categoryId) {
       try {
         const response = await Api.get(`/categories/${categoryId}/expenses`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
@@ -283,6 +286,7 @@ export default {
       }
     },
 
+    // PUT update an expense
     async updateExpense(expenseToUpdate) {
       try {
         const updatedData = {
@@ -309,6 +313,7 @@ export default {
       }
     },
 
+    // Delete a single expense
     async deleteExpense(category, expenseId) {
       const confirmed = window.confirm('Are you sure you want to delete this expense? This action cannot be undone!')
       if (!confirmed) {
@@ -337,6 +342,7 @@ export default {
       }
     },
 
+    // Show or hide the form for PUT updating expense
     toggleUpdateForm(expenseId) {
       if (this.showUpdateForm === expenseId) {
       // If the form the currently chosen expense is shown, hide it
@@ -347,6 +353,7 @@ export default {
       }
     },
 
+    // Show or hide the update button inside the expense box
     showUpdateButton(expenseId) {
       if (this.showUpdateButtonId === expenseId) {
         this.showUpdateButtonId = null
@@ -356,6 +363,7 @@ export default {
       }
     },
 
+    // Sums the total expenses (used to sum up expenses belonging to a specific category)
     sumExpenses(expenses) {
       return expenses.reduce((total, expense) => {
         const amount = parseFloat(expense.amount)
@@ -363,11 +371,13 @@ export default {
       }, 0).toFixed(2)
     },
 
+    // Changes the date attribute to work with the frontend date popup editor
     formatDate(dateString) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' }
       return new Date(dateString).toLocaleDateString(undefined, options)
     },
 
+    // Changes the date attribute back again to work with the backend date format
     formatDateForInput(dateString) {
       const date = new Date(dateString)
       return date.toISOString().split('T')[0]
@@ -467,13 +477,14 @@ export default {
   flex: 2;
   flex-direction: column;
   padding-top: 30px;
+  padding-bottom: 30px;
   padding-left: 4%;
   padding-right: 4%;
   list-style-type: none;
 }
 .category-section li {
   padding: 5px 10px;
-  border: 1px solid #42bbf7;
+  /*border: 1px solid #42bbf7;*/
   background: #ffffff;
   margin-bottom: 10px;
   border-radius: 4px;
@@ -489,9 +500,9 @@ export default {
 .category-box {
     display: inline-block;
     padding: 5px 10px;
-    border: 1px solid #ffffff;
-    /*margin-right: 10px;
-    margin-bottom: 10px;*/
+    border: 1px solid #7fc9ff;
+    /*margin-right: 10px;*/
+    margin-bottom: 10px;
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.3s;
@@ -524,7 +535,7 @@ export default {
     max-height: 50px;
     margin-top: 10%;
     font-size: 15px;
-    background-color: #ff4d4d;
+    background-color: "btn-danger";
     color: white;
     border: none;
     padding: 10px 15px;
@@ -548,6 +559,7 @@ export default {
 }
 .form-control {
   min-width: 150px;
+  padding-top: 10px;
 }
 .white-text {
   color:#ffffff;
@@ -560,5 +572,12 @@ export default {
 }
 #headerText {
   margin-top: 15px;
+}
+.save-expense-button {
+  background-color: #50C878;
+  border: none;
+}
+.expense-form {
+  margin-top: 10px;
 }
 </style>
