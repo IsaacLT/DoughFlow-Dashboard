@@ -93,10 +93,10 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
 import ColumnChart from '../components/Columnchart.vue'
 import Navbar from '@/components/Navbar'
 import Toast from '@/components/Toast'
+import Api from '@/Api.js'
 
 export default {
   name: 'Dashboard',
@@ -210,8 +210,7 @@ export default {
         date: currentDate
       }
       console.log('Sending expense', newExpense)
-      axios
-        .post(`http://localhost:3000/api/v1/categories/${categoryId}/expenses`, newExpense, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
+      Api.post(`/categories/${categoryId}/expenses`, newExpense, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
           console.log('Expense added successfully', response.data)
           this.amount = null
@@ -220,7 +219,7 @@ export default {
           this.fetchCategories()
         })
         .catch(error => {
-          if (error.response.status === 404) {
+          if (error.response && error.response.status === 404) {
             this.$refs.toast.showToast('Error adding expense', 'Amount and/or Category is missing')
           }
         })
@@ -231,7 +230,7 @@ export default {
         return
       }
       const budgetId = this.selectedBudget._id
-      axios.get(`http://localhost:3000/api/v1/budgets/${budgetId}/categories`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
+      Api.get(`/budgets/${budgetId}/categories`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
           this.categories = response.data.categories
         })
@@ -248,8 +247,7 @@ export default {
       const newCategory = {
         categoryName: this.categoryName
       }
-      axios
-        .post(`http://localhost:3000/api/v1/budgets/${budgetId}/categories`, newCategory, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
+      Api.post(`/budgets/${budgetId}/categories`, newCategory, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
           console.log('Category added successfully', response.data)
           this.categoryName = ''

@@ -5,6 +5,7 @@ const Expense = require('../models/expense');
 const authenticator = require('../authenticator');
 
 router.post('/categories', authenticator, async function (req, res) {
+    try {
     const name = req.body.categoryName;
     const existingCategory = await Category.findOne({categoryName: name});
     if(existingCategory) {
@@ -16,18 +17,26 @@ router.post('/categories', authenticator, async function (req, res) {
     await category.save();
     res.json(category);
     }
+    } catch (err) {
+    res.status(500).json({ error: err.message });   
+    }
 });
 
 router.get('/categories', authenticator, async function (req, res) {
+    try {
     const categories = await Category.find({});
     if(categories.length == 0) {
         res.status(404).json({message: "No categories found"});
     } else {
     res.json(categories);
     }
+    } catch (err) {
+    res.status(500).json({ error: err.message });
+    }
 });
 
 router.get('/categories/:id', authenticator, async function (req, res) {
+    try {
     const id = req.params.id;
     // Query the database to retrieve a category by category name
     const category = await Category.findOne({_id: id});
@@ -35,9 +44,13 @@ router.get('/categories/:id', authenticator, async function (req, res) {
     return res.status(404).json({ message: 'Category not found' });
     }
     res.json(category);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.patch('/categories/:id', authenticator, async function (req, res) {
+    try {
     const id = req.params.id;
     // Query the database to retrieve a category by ID
     const category = await Category.findOne({_id: id});
@@ -48,9 +61,13 @@ router.patch('/categories/:id', authenticator, async function (req, res) {
     // Save the updated category
     await category.save();
     res.json(category);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
 });
 
 router.delete('/categories/:id', authenticator, async function(req, res) {
+    try {
     const id = req.params.id;
     // Query the database to retrieve a category by ID
     const category = await Category.findOne({_id: id});
@@ -59,11 +76,15 @@ router.delete('/categories/:id', authenticator, async function(req, res) {
     } 
     await Category.deleteOne(category);
     res.json({message: 'Category deleted succesfully'});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.post('/categories/:id/expenses', authenticator, async function (req, res) {
+    try {
     const categoryId = req.params.id;
-        // Find the category by Id
+    // Find the category by Id
     const category = await Category.findById(categoryId);
 
     if (!category) {
@@ -84,9 +105,13 @@ router.post('/categories/:id/expenses', authenticator, async function (req, res)
         category.totalAmount += newExpense.amount
         await category.save();
         res.json(newExpense);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.get('/categories/:id/expenses', authenticator, async function (req, res) {
+    try {
     const categoryId = req.params.id;
         // Query the database to retrieve a user by ID
         const category = await Category.findById(categoryId).populate("expenses");
@@ -95,9 +120,13 @@ router.get('/categories/:id/expenses', authenticator, async function (req, res) 
         }
         // Send the retrieved user data as the response
         res.json(category);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.get('/categories/:id/expenses/:expenseid', authenticator, async function (req, res) {
+    try {
     const categoryId = req.params.id;
     const expenseId = req.params.expenseid;
     // Find the category by Id
@@ -111,9 +140,13 @@ router.get('/categories/:id/expenses/:expenseid', authenticator, async function 
         return res.status(404).json({ message: 'Expense not found', expenseId, category});
     }
     res.json(expense);
+    } catch (err) {
+     res.status(500).json({ error: err.message });
+    }
 });
 
 router.delete('/categories/:id/expenses/:expenseid', authenticator, async function (req, res) {
+    try {
     const categoryId = req.params.id;
     const expenseId = req.params.expenseid;
     // Find the category by Id
@@ -128,6 +161,9 @@ router.delete('/categories/:id/expenses/:expenseid', authenticator, async functi
     }
     await Expense.deleteOne(expense);
     res.json({message: 'Expense deleted succesfully', expense});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 
