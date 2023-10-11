@@ -11,7 +11,7 @@
         <li v-for="budget in budgets" :key="budget._id">
             <div class="budget-box p-2 mb-3" @click.stop="handleBudgetClick(budget._id)">
                 <div>{{ budget.name }} - ${{ budget.amount }}</div>
-                <button class="btn btn-info btn-sm ml-2" @click.stop="selectBudget(budget)">Select Budget</button>
+                <button class="btn btn-info btn-sm ml-2" @click.stop="selectBudget(budget); handleBudgetClick(budget._id)">Select Budget</button>
                 <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteBudget(budget)">Delete</button>
             </div>
         </li>
@@ -50,14 +50,14 @@
                         {{ expense.description }}: {{ expense.amount }}kr
                         <div>{{ formatDate(expense.date) }}</div>
 
-                        <button v-if="showUpdateButtonId === expense._id" @click.stop="toggleUpdateForm(expense._id)">Update Expense</button>
+                        <button v-if="showUpdateButtonId === expense._id" class="btn btn-info btn-sm ml-2 t-1 b-2" @click.stop="toggleUpdateForm(expense._id)">Update Expense</button>
                         <div v-if="showUpdateForm === expense._id">
 
-                        <input v-model="expense.amount" placeholder="Amount" @click.stop>
-                        <input v-model="expense.description" placeholder="Description" @click.stop>
+                        <input v-model="expense.amount" placeholder="Amount" @click.stop class="expense-form">
+                        <input v-model="expense.description" placeholder="Description" @click.stop class="expense-form">
                         <input :value="formatDateForInput(expense.date)" @input="expense.date = $event.target.value" type="date" placeholder="Date" @click.stop>
-                        <button @click="updateExpense(expense)">Save</button>
-                        <button @click.stop="deleteExpense(category, expense._id)">Delete Expense</button>
+                        <button class="save-expense-button btn btn-info btn-sm ml-2 t-1 b-2" @click="updateExpense(expense)">Save</button>
+                        <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteExpense(category, expense._id)">Delete Expense</button>
                       </div>
                       </div>
                       </li>
@@ -477,13 +477,14 @@ export default {
   flex: 2;
   flex-direction: column;
   padding-top: 30px;
+  padding-bottom: 30px;
   padding-left: 4%;
   padding-right: 4%;
   list-style-type: none;
 }
 .category-section li {
   padding: 5px 10px;
-  border: 1px solid #42bbf7;
+  /*border: 1px solid #42bbf7;*/
   background: #ffffff;
   margin-bottom: 10px;
   border-radius: 4px;
@@ -499,9 +500,9 @@ export default {
 .category-box {
     display: inline-block;
     padding: 5px 10px;
-    border: 1px solid #ffffff;
-    /*margin-right: 10px;
-    margin-bottom: 10px;*/
+    border: 1px solid #7fc9ff;
+    /*margin-right: 10px;*/
+    margin-bottom: 10px;
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.3s;
@@ -534,7 +535,7 @@ export default {
     max-height: 50px;
     margin-top: 10%;
     font-size: 15px;
-    background-color: #ff4d4d;
+    background-color: "btn-danger";
     color: white;
     border: none;
     padding: 10px 15px;
@@ -558,6 +559,7 @@ export default {
 }
 .form-control {
   min-width: 150px;
+  padding-top: 10px;
 }
 .white-text {
   color:#ffffff;
@@ -570,5 +572,12 @@ export default {
 }
 #headerText {
   margin-top: 15px;
+}
+.save-expense-button {
+  background-color: #50C878;
+  border: none;
+}
+.expense-form {
+  margin-top: 10px;
 }
 </style>
