@@ -35,7 +35,7 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+import Api from '@/Api.js'
 import Toast from '@/components/Toast'
 import Navbar from '@/components/Navbar'
 
@@ -60,8 +60,8 @@ export default {
       }
       const username = localStorage.getItem('username')
       try {
-        const response = await axios.patch(
-      `http://localhost:3000/api/v1/users/${username}`,
+        const response = await Api.patch(
+      `/users/${username}`,
       { password: this.password },
       { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } }
         )
@@ -78,8 +78,8 @@ export default {
       const isConfirmed = window.confirm('Are you sure you want to delete your account?')
       if (!isConfirmed) return
       try {
-        const response = await axios.delete(
-      `http://localhost:3000/api/v1/users/${this.$route.params.username}`,
+        const response = await Api.delete(
+      `/users/${this.$route.params.username}`,
       { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } }
         )
         if (response.status === 200) {

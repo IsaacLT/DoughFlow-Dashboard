@@ -80,10 +80,10 @@
 </template>
 
 <script>
-import axios from 'axios'
 import Navbar from '../components/Navbar.vue'
 import { mapGetters } from 'vuex'
 import Toast from '../components/Toast.vue'
+import Api from '@/Api.js'
 
 export default {
   name: 'BudgetManagement',
@@ -117,7 +117,7 @@ export default {
   methods: {
     async getBudgets() {
       const username = localStorage.getItem('username')
-      axios.get(`http://localhost:3000/api/v1/users/${username}/budgets`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
+      Api.get(`/users/${username}/budgets`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
           this.budgets = response.data.budgets
         })
@@ -271,7 +271,7 @@ export default {
 
     async fetchExpensesByCategory(categoryId) {
       try {
-        const response = await axios.get(`${this.URL}/categories/${categoryId}/expenses`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
+        const response = await Api.get(`/categories/${categoryId}/expenses`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         if (response.data && response.data.expenses && response.data.expenses.length > 0) {
           this.expenses = response.data.expenses
         } else {
@@ -291,7 +291,7 @@ export default {
           date: new Date(expenseToUpdate.date).toISOString()
         }
 
-        const response = await axios.put(`${this.URL}/expenses/${expenseToUpdate._id}`, updatedData, {
+        const response = await Api.put(`/expenses/${expenseToUpdate._id}`, updatedData, {
           headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
         })
 

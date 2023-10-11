@@ -5,6 +5,7 @@ const Expense = require('../models/expense');
 const authenticator = require('../authenticator');
 
 router.post('/categories', authenticator, async function (req, res) {
+    try {
     const name = req.body.categoryName;
     const existingCategory = await Category.findOne({categoryName: name});
     if(existingCategory) {
@@ -15,6 +16,9 @@ router.post('/categories', authenticator, async function (req, res) {
     });
     await category.save();
     res.json(category);
+    }
+    } catch (err) {
+    res.status(500).json({ error: err.message });   
     }
 });
 
@@ -62,6 +66,7 @@ router.delete('/categories/:id', authenticator, async function(req, res) {
 });
 
 router.post('/categories/:id/expenses', authenticator, async function (req, res) {
+    try {
     const categoryId = req.params.id;
         // Find the category by Id
     const category = await Category.findById(categoryId);
@@ -84,9 +89,13 @@ router.post('/categories/:id/expenses', authenticator, async function (req, res)
         category.totalAmount += newExpense.amount
         await category.save();
         res.json(newExpense);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.get('/categories/:id/expenses', authenticator, async function (req, res) {
+    try {
     const categoryId = req.params.id;
         // Query the database to retrieve a user by ID
         const category = await Category.findById(categoryId).populate("expenses");
@@ -95,6 +104,9 @@ router.get('/categories/:id/expenses', authenticator, async function (req, res) 
         }
         // Send the retrieved user data as the response
         res.json(category);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
 });
 
 router.get('/categories/:id/expenses/:expenseid', authenticator, async function (req, res) {
