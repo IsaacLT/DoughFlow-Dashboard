@@ -220,6 +220,7 @@ export default {
       }
     },
 
+    // Delete all of the budgets for this user
     async deleteAllBudgets() {
       const confirmed = window.confirm('Are you sure you want to delete all of your budgets? This step is irrevocable!')
       if (!confirmed) {
@@ -245,6 +246,7 @@ export default {
       }
     },
 
+    // Delete single category from category list for that budget
     async deleteCategory(categoryId) {
       const confirmed = window.confirm('Are you sure you want to delete this category? This action cannot be undone!')
       if (!confirmed) {
@@ -269,6 +271,7 @@ export default {
       }
     },
 
+    // Get expenses belonging to specific category
     async fetchExpensesByCategory(categoryId) {
       try {
         const response = await axios.get(`${this.URL}/categories/${categoryId}/expenses`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
@@ -283,6 +286,7 @@ export default {
       }
     },
 
+    // PUT update an expense
     async updateExpense(expenseToUpdate) {
       try {
         const updatedData = {
@@ -309,6 +313,7 @@ export default {
       }
     },
 
+    // Delete a single expense
     async deleteExpense(category, expenseId) {
       const confirmed = window.confirm('Are you sure you want to delete this expense? This action cannot be undone!')
       if (!confirmed) {
@@ -337,6 +342,7 @@ export default {
       }
     },
 
+    // Show or hide the form for PUT updating expense
     toggleUpdateForm(expenseId) {
       if (this.showUpdateForm === expenseId) {
       // If the form the currently chosen expense is shown, hide it
@@ -347,6 +353,7 @@ export default {
       }
     },
 
+    // Show or hide the update button inside the expense box
     showUpdateButton(expenseId) {
       if (this.showUpdateButtonId === expenseId) {
         this.showUpdateButtonId = null
@@ -356,6 +363,7 @@ export default {
       }
     },
 
+    // Sums the total expenses (used to sum up expenses belonging to a specific category)
     sumExpenses(expenses) {
       return expenses.reduce((total, expense) => {
         const amount = parseFloat(expense.amount)
@@ -363,11 +371,13 @@ export default {
       }, 0).toFixed(2)
     },
 
+    // Changes the date attribute to work with the frontend date popup editor
     formatDate(dateString) {
       const options = { year: 'numeric', month: 'long', day: 'numeric' }
       return new Date(dateString).toLocaleDateString(undefined, options)
     },
 
+    // Changes the date attribute back again to work with the backend date format
     formatDateForInput(dateString) {
       const date = new Date(dateString)
       return date.toISOString().split('T')[0]
