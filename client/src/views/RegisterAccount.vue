@@ -32,8 +32,9 @@
   </div>
 </template>
 <script>
-import axios from 'axios'
+
 import Toast from '@/components/Toast'
+import Api from '@/Api.js'
 
 export default {
   name: 'CreateAccount',
@@ -48,7 +49,7 @@ export default {
   },
   methods: {
     async createAccount() {
-      await axios.post('http://localhost:3000/api/v1/users', {
+      await Api.post('/users', {
         username: this.username,
         password: this.password
       })

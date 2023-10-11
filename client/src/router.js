@@ -6,6 +6,7 @@ import BudgetManagement from './views/BudgetManagement.vue'
 import RegisterAccount from './views/RegisterAccount.vue'
 import Login from './views/Login.vue'
 import ManageAccount from './views/ManageAccount.vue'
+import Error500 from './views/500error.vue'
 Vue.use(Router)
 
 const router = new Router({
@@ -38,6 +39,11 @@ const router = new Router({
       name: 'my-account',
       component: ManageAccount,
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/500',
+      name: 'Error500',
+      component: Error500
     }
   ]
 })

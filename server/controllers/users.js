@@ -24,6 +24,7 @@ function getUserBudgetLinks(username, budgetId) {
 
 
 router.post('/login', async function (req, res) {
+    try {
     const username = req.body.username;
     const password = req.body.password;
 
@@ -44,9 +45,13 @@ router.post('/login', async function (req, res) {
     const token = jwt.sign({username: user.username, userId: user._id}, config.jwtKey, { expiresIn: '2h' });
 
     res.json({ message: 'Login successful', token});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.post('/users', async function (req, res) {
+    try {
     const username = req.body.username;
     const password = req.body.password;
     const expenses = req.body.expenses;
@@ -62,9 +67,13 @@ router.post('/users', async function (req, res) {
     await user.save();
     res.json(user);
     }
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.get('/users/:username', authenticator, async function (req, res) {
+    try {
     const username = req.params.username;
     // Query the database to retrieve a user by username
     const user = await User.findOne({username});
@@ -72,9 +81,13 @@ router.get('/users/:username', authenticator, async function (req, res) {
     return res.status(404).json({ message: 'User not found' });
     }
     res.json(user);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.patch('/users/:username', authenticator, async function (req, res) {
+    try {
     const username = req.params.username;
     // Query the database to retrieve a user by username
     const user = await User.findOne({username});
@@ -85,9 +98,13 @@ router.patch('/users/:username', authenticator, async function (req, res) {
     // Save the updated user
     await user.save();
     res.json(user);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.delete('/users/:username', authenticator, async function(req, res) {
+    try {
     const username = req.user.username;
     // Query the database to retrieve a user by username
     const user = await User.findOne({username});
@@ -97,9 +114,13 @@ router.delete('/users/:username', authenticator, async function(req, res) {
     await User.deleteOne(user);
     // Send the retrieved user data as the response
     res.json({message: 'User deleted succesfully', user});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.post('/users/:username/expenses', authenticator, async function (req, res) {
+    try {
     const username = req.params.username;
         // Find the user by username
     const user = await User.findOne({ username });
@@ -121,9 +142,13 @@ router.post('/users/:username/expenses', authenticator, async function (req, res
         user.expenses.push(newExpense);
         await user.save();
         res.json(newExpense);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.get('/users/:username/expenses', authenticator, async function (req, res) {
+    try {
     const username = req.params.username;
         // Query the database to retrieve a user by username
         const user = await User.findOne({ username }).populate("expenses");
@@ -158,9 +183,13 @@ router.get('/users/:username/expenses', authenticator, async function (req, res)
         // Send the filtered and sorted expenses as the response
         // Send the retrieved user data as the response
         res.json(expenses);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.get('/users/:username/expenses/:id', authenticator, async function (req, res) {
+    try {
     const username = req.params.username;
     const expenseId = req.params.id;
     // Find the user by username
@@ -174,9 +203,13 @@ router.get('/users/:username/expenses/:id', authenticator, async function (req, 
         return res.status(404).json({ message: 'Expense not found', expenseId, username});
     }
     res.json(expense);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.delete('/users/:username/expenses/:id', authenticator, async function (req, res) {
+    try {
     const username = req.params.username;
     const expenseId = req.params.id;
     // Find the user by username
@@ -191,11 +224,15 @@ router.delete('/users/:username/expenses/:id', authenticator, async function (re
     }
     await Expense.deleteOne(expense);
     res.json({message: 'Expense deleted succesfully', expense});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 //////////////////////////////////////////////////////////////////////////////////
 
 
 router.post('/users/:username/budgets', authenticator, async function (req, res) {
+    try {
     const username = req.params.username;
     // Find the user by username
     const user = await User.findOne({ username });
@@ -219,10 +256,14 @@ router.post('/users/:username/budgets', authenticator, async function (req, res)
         links: getUserBudgetLinks(username, newBudget._id)
     }
     res.json(budgetWithLinks);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 
 router.get('/users/:username/budgets', authenticator, async function (req, res) {
+    try {
     const username = req.params.username;
     
     // Query the database to retrieve a user by username
@@ -245,9 +286,13 @@ router.get('/users/:username/budgets', authenticator, async function (req, res) 
     }));
 
     res.json(budgetsWithLinks);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.get('/users/:username/budgets/:id', authenticator, async function (req, res) {
+    try {
     const username = req.params.username;
     const budgetId = req.params.id;
     // Find the user by username
@@ -261,10 +306,14 @@ router.get('/users/:username/budgets/:id', authenticator, async function (req, r
         return res.status(404).json({ message: 'Budget not found'});
     }
     res.json(budget);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 //Delete a single budget by id
 router.delete('/users/:username/budgets/:id', authenticator, async function (req, res) {
+    try {
     const username = req.params.username;
     const budgetId = req.params.id;
     // Find the user by username
@@ -279,9 +328,13 @@ router.delete('/users/:username/budgets/:id', authenticator, async function (req
     }
     await Budget.deleteOne(budget);
     res.json({message: 'Budget deleted succesfully', budget});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 router.delete('/users/:username/budgets', authenticator, async function (req, res) {
+    try {
     const username = req.params.username;
     // Find the user by username
     const user = await User.findOne({ username });
@@ -294,6 +347,9 @@ router.delete('/users/:username/budgets', authenticator, async function (req, re
         return res.status(404).json({ message: 'Budget not found'});
     }
     res.json({message: 'All budgets deleted succesfully', budget});
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
 module.exports = router;
