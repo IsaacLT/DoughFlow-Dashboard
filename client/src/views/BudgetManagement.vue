@@ -118,7 +118,7 @@ export default {
       const username = localStorage.getItem('username')
       axios.get(`http://localhost:3000/api/v1/users/${username}/budgets`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
-          this.budgets = response.data.budgets
+          this.budgets = response.data
         })
         .catch(error => {
           console.error('Error fetching categories', error)
