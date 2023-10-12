@@ -10,7 +10,7 @@
     <ul class="list-unstyled">
         <li v-for="budget in budgets" :key="budget._id">
             <div class="budget-box p-2 mb-3" @click.stop="handleBudgetClick(budget._id)">
-                <div>{{ budget.name }} - ${{ budget.amount }}</div>
+                <div>{{ budget.name }} - {{ budget.amount }}Kr</div>
                 <button class="btn btn-info btn-sm ml-2" @click.stop="selectBudget(budget); handleBudgetClick(budget._id)">Select Budget</button>
                 <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteBudget(budget)">Delete</button>
             </div>
