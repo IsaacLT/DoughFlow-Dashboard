@@ -10,7 +10,7 @@
     <ul class="list-unstyled">
         <li v-for="budget in budgets" :key="budget._id">
             <div class="budget-box p-2 mb-3" @click.stop="handleBudgetClick(budget._id)">
-                <div>{{ budget.name }} - ${{ budget.amount }}</div>
+                <div>{{ budget.name }} - {{ budget.amount }} kr</div>
                 <button class="btn btn-info btn-sm ml-2" @click.stop="selectBudget(budget); handleBudgetClick(budget._id)">Select Budget</button>
                 <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteBudget(budget)">Delete</button>
             </div>
@@ -26,7 +26,7 @@
             <form @submit.prevent="createBudget" class="form-inline">
               <div class="create-budget-fields">
               <input v-model="newBudget.name" placeholder="Budget Name" required class="form-control mr-2" maxlength="10">
-              <input v-model.number="newBudget.amount" placeholder="Amount" type="number" required class="form-control mr-2" maxlength="8">
+              <input v-model.number="newBudget.amount" @input="checkPositiveBudget" placeholder="Amount" type="number" required class="form-control mr-2" maxlength="8">
               <button type="submit" class="btn btn-primary">Add Budget</button>
             </div>
             </form>
@@ -42,21 +42,21 @@
                     <div class="category-name">
                         <strong>{{ category.categoryName }}</strong>
                       </div>
-                    <div>Total amount spent: {{ sumExpenses(category.expenses) }}kr</div>
+                    <div>Total amount spent: {{ sumExpenses(category.expenses) }} kr</div>
                     <div class="category-box">
 
                     <ul class="list-unstyled">
                       <li v-for="expense in category.expenses" :key="expense._id" class="mt-2">
                         <div class="expense-container" @click="showUpdateButton(expense._id)">
-                        {{ expense.description }}: {{ expense.amount }}kr
+                        {{ expense.description }}: {{ expense.amount }} kr
                         <div>{{ formatDate(expense.date) }}</div>
 
                         <button v-if="showUpdateButtonId === expense._id" class="btn btn-info btn-sm ml-2 t-1 b-2" @click.stop="toggleUpdateForm(expense._id)">Update Expense</button>
                         <div v-if="showUpdateForm === expense._id">
 
-                        <input v-model="expense.amount" placeholder="Amount" @click.stop class="form-control">
+                        <input v-model="expenseAmount" @input="checkPositiveExpense" placeholder="Amount" @click.stop class="form-control">
                         <input v-model="expense.description" placeholder="Description" @click.stop class="form-control">
-                        <input :value="formatDateForInput(expense.date)" @input="expense.date = $event.target.value" type="date" placeholder="Date" @click.stop class="form-control">
+                        <input :value="formatDateForInput(expense.date)"  @input="expense.date = $event.target.value, checkPositive" type="date" placeholder="Date" @click.stop class="form-control">
                         <button class="save-expense-button btn btn-info btn-sm ml-2 t-1 b-2" @click="updateExpense(expense)">Save</button>
                         <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteExpense(category, expense._id)">Delete Expense</button>
                       </div>
@@ -90,6 +90,7 @@ export default {
   name: 'BudgetManagement',
   data() {
     return {
+      expenseAmount: 0,
       newBudget: {
         name: '',
         amount: 0
@@ -298,6 +299,7 @@ export default {
     // PUT update an expense
     async updateExpense(expenseToUpdate) {
       try {
+        expenseToUpdate.amount = this.expenseAmount
         const updatedData = {
           amount: parseFloat(expenseToUpdate.amount),
           description: expenseToUpdate.description,
@@ -390,7 +392,22 @@ export default {
     formatDateForInput(dateString) {
       const date = new Date(dateString)
       return date.toISOString().split('T')[0]
+    },
+
+    // Check to make sure that the number is positive, used for input forms fields
+    checkPositiveBudget() {
+      if (this.newBudget.amount < 0) {
+        this.$refs.toast.showToast('Invalid input', 'Please enter a positive number')
+        this.newBudget.amount = 0
+      }
+    },
+    checkPositiveExpense() {
+      if (this.expenseAmount < 0) {
+        this.$refs.toast.showToast('Invalid input', 'Please enter a positive number')
+        this.expenseAmount = 0
+      }
     }
+
   }
 }
 

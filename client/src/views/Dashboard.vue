@@ -13,7 +13,7 @@
                   <!-- Amount input -->
                   <div class="form-group">
                     <div class="input-box">
-                    <input type="number" class="form-control" v-model="amount" placeholder="Amount" required>
+                    <input type="number" class="form-control" v-model="amount" @input="checkPositive" placeholder="Amount" required>
                     </div>
                   </div>
                   <!-- Dropdown category selection -->
@@ -30,8 +30,8 @@
                   <!-- New category Popup -->
                   <div v-if="showPopup" class="popup">
                     <div class="form-group">
-                      <input class="form-control category-input" v-model="categoryName" @keyup.enter="addCategory" placeholder="New category" />
-                      <button class="btn add-category-button" @click="addCategory">Add</button>
+                      <input class="form-control category-input" v-model="categoryName" @keyup.enter="handleAddCategory" placeholder="New category" />
+                      <button class="btn add-category-button" @click="handleAddCategory">Add</button>
                       <button class="btn exit-button" @click="showPopup = false">Exit</button>
                     </div>
                   </div>
@@ -240,7 +240,7 @@ export default {
     },
     async addCategory() {
       if (!this.selectedBudget) {
-        console.error('No budget selected')
+        this.$refs.toast.showToast('Invalid input', 'No budget selected')
         return
       }
       const budgetId = this.selectedBudget._id
@@ -259,6 +259,16 @@ export default {
     },
     totalExpenses() {
       return this.categories.reduce((sum, category) => sum + category.totalAmount, 0)
+    },
+    checkPositive() {
+      if (this.amount < 0) {
+        this.$refs.toast.showToast('Invalid input', 'Please enter a positive number')
+        this.amount = 0
+      }
+    },
+    handleAddCategory() {
+      this.addCategory()
+      this.showPopup = false
     }
   },
   mounted() {
