@@ -25,8 +25,8 @@
             <h2 id="headerText" class="white-text">Create New Budget</h2>
             <form @submit.prevent="createBudget" class="form-inline">
               <div class="create-budget-fields">
-              <input v-model="newBudget.name" placeholder="Budget Name" required class="form-control mr-2" maxlength="10">
-              <input v-model.number="newBudget.amount" placeholder="Amount" type="number" required class="form-control mr-2" maxlength="8">
+              <input v-model="newBudget.name" @input="checkPositive" placeholder="Budget Name" required class="form-control mr-2" maxlength="10">
+              <input v-model.number="newBudget.amount" @input="checkPositive" placeholder="Amount" type="number" required class="form-control mr-2" maxlength="8">
               <button type="submit" class="btn btn-primary">Add Budget</button>
             </div>
             </form>
@@ -54,9 +54,9 @@
                         <button v-if="showUpdateButtonId === expense._id" class="btn btn-info btn-sm ml-2 t-1 b-2" @click.stop="toggleUpdateForm(expense._id)">Update Expense</button>
                         <div v-if="showUpdateForm === expense._id">
 
-                        <input v-model="expense.amount" placeholder="Amount" @click.stop class="form-control">
-                        <input v-model="expense.description" placeholder="Description" @click.stop class="form-control">
-                        <input :value="formatDateForInput(expense.date)" @input="expense.date = $event.target.value" type="date" placeholder="Date" @click.stop class="form-control">
+                        <input v-model="expense.amount" @input="checkPositive" placeholder="Amount" @click.stop class="form-control">
+                        <input v-model="expense.description" @input="checkPositive" placeholder="Description" @click.stop class="form-control">
+                        <input :value="formatDateForInput(expense.date)"  @input="expense.date = $event.target.value, checkPositive" type="date" placeholder="Date" @click.stop class="form-control">
                         <button class="save-expense-button btn btn-info btn-sm ml-2 t-1 b-2" @click="updateExpense(expense)">Save</button>
                         <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteExpense(category, expense._id)">Delete Expense</button>
                       </div>
@@ -390,7 +390,16 @@ export default {
     formatDateForInput(dateString) {
       const date = new Date(dateString)
       return date.toISOString().split('T')[0]
+    },
+
+    // Check to make sure that the number is positive, used for input forms fields
+    checkPositive() {
+      if (this.newBudget.amount < 0) {
+        this.$refs.toast.showToast('Invalid input', 'Please enter a positive number')
+        this.newBudget.amount = 0
+      }
     }
+
   }
 }
 
