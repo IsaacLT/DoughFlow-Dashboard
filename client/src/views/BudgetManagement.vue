@@ -18,7 +18,7 @@
     </ul>
     <button @click="deleteAllBudgets" class="delete-all-button btn btn-danger btn-lg btn-block">Delete All Budgets</button>
 </div>
-
+        <!-- Right content -->
         <div class="right-content col-md-9">
           <!-- Right Section: Create Budget Form -->
           <div class="right-section mb-4">
@@ -32,6 +32,7 @@
             </form>
           </div>
 
+          <!-- Category Section-->
           <div class="category-section" v-if="selectedBudget">
             <div v-if="categories && categories.length">
               <h2 class="white-text">Categories for {{ selectedBudget.name }}</h2>
@@ -53,9 +54,9 @@
                         <button v-if="showUpdateButtonId === expense._id" class="btn btn-info btn-sm ml-2 t-1 b-2" @click.stop="toggleUpdateForm(expense._id)">Update Expense</button>
                         <div v-if="showUpdateForm === expense._id">
 
-                        <input v-model="expense.amount" placeholder="Amount" @click.stop class="expense-form">
-                        <input v-model="expense.description" placeholder="Description" @click.stop class="expense-form">
-                        <input :value="formatDateForInput(expense.date)" @input="expense.date = $event.target.value" type="date" placeholder="Date" @click.stop>
+                        <input v-model="expense.amount" placeholder="Amount" @click.stop class="form-control">
+                        <input v-model="expense.description" placeholder="Description" @click.stop class="form-control">
+                        <input :value="formatDateForInput(expense.date)" @input="expense.date = $event.target.value" type="date" placeholder="Date" @click.stop class="form-control">
                         <button class="save-expense-button btn btn-info btn-sm ml-2 t-1 b-2" @click="updateExpense(expense)">Save</button>
                         <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteExpense(category, expense._id)">Delete Expense</button>
                       </div>
@@ -98,7 +99,6 @@ export default {
       categories: [],
       expenses: [],
       URL: 'http://localhost:3000/api/v1',
-      // stores the currently clicked expense Id
       showUpdateForm: null,
       showUpdateButtonId: null
     }
@@ -115,6 +115,7 @@ export default {
     this.getBudgets()
   },
   methods: {
+    // Fetches budgets belonging to the currently logged in user by its username
     async getBudgets() {
       const username = localStorage.getItem('username')
       Api.get(`/users/${username}/budgets`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
@@ -125,6 +126,8 @@ export default {
           console.error('Error fetching categories', error)
         })
     },
+
+    // Creates new budget and connects it to a user, then adds it to the list of budgets belonging to that user
     async createBudget() {
       const username = localStorage.getItem('username')
       try {
@@ -149,12 +152,14 @@ export default {
       }
     },
 
+    // Updates which budget is currently selected when clicking the select budget button
     selectBudget(budget) {
       this.$store.dispatch('updateSelectedBudget', budget)
       const budgetName = `${budget.name}`
       this.$refs.toast.showToast('Budget Chosen', budgetName + ' is now set as your budget')
     },
 
+    // Fetches list of category objects belonging to a specific budget
     async fetchCategoriesForBudget(budgetId) {
       const response = await fetch(`${this.URL}/budgets/${budgetId}/categories`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
       if (!response.ok) {
@@ -163,6 +168,7 @@ export default {
       return response.json()
     },
 
+    // Fetches list of expense objects belonging to a specific category
     async fetchExpensesForCategory(categoryId) {
       const response = await fetch(`${this.URL}/categories/${categoryId}/expenses`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
       if (!response.ok) {
@@ -172,6 +178,8 @@ export default {
       return response.json()
     },
 
+    // Clears the current categories, identifies the selected budget by its ID, fetches its associated categories,
+    // and then for each category, fetches and attaches its corresponding expenses
     async handleBudgetClick(budgetId) {
       this.categories = []
       try {
@@ -189,6 +197,7 @@ export default {
       }
     },
 
+    // Utilizing hateoas links, fetches the current budget and removes it from the list of budgets belonging to the currently logged in user
     async deleteBudget(budget) {
       console.log('Budget data:', budget)
 
