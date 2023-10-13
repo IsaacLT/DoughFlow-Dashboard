@@ -22,7 +22,8 @@ const router = new Router({
     {
       path: '/budgetmanagement',
       name: 'budgetManagement',
-      component: BudgetManagement
+      component: BudgetManagement,
+      meta: { requiresAuth: true }
     },
     {
       path: '/',
@@ -44,6 +45,10 @@ const router = new Router({
       path: '/500',
       name: 'Error500',
       component: Error500
+    },
+    {
+      path: '*',
+      redirect: '/'
     }
   ]
 })
