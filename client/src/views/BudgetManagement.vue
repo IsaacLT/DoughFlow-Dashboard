@@ -36,6 +36,7 @@
           <div class="category-section" v-if="selectedBudget">
             <div v-if="categories && categories.length">
               <h2 class="white-text">Categories for {{ selectedBudget.name }}</h2>
+            <div class="category-box-scrollable">
               <ul class="list-unstyled">
                 <li v-for="category in categories" :key="category._id" class="p-2 mb-3 border rounded">
                   <div class="category-container">
@@ -64,10 +65,12 @@
                       </li>
                     </ul>
                   </div>
+
                   <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteCategory(category._id)">Delete Category</button>
                 </div>
                 </li>
               </ul>
+            </div>
             </div>
             <div v-else>
               <h2 class="white-text">No categories for {{ selectedBudget.name }}</h2>
@@ -381,15 +384,13 @@ export default {
 
     // Check to make sure that the number is positive, used for input forms fields
     checkPositiveBudget() {
-      if (this.newBudget.amount < 0) {
+      if (this.newBudget.amount <= 0) {
         this.$refs.toast.showToast('Invalid input', 'Please enter a positive number')
-        this.newBudget.amount = 0
       }
     },
     checkPositiveExpense() {
-      if (this.expenseAmount < 0) {
+      if (this.expenseAmount <= 0) {
         this.$refs.toast.showToast('Invalid input', 'Please enter a positive number')
-        this.expenseAmount = 0
       }
     }
 
@@ -404,7 +405,7 @@ export default {
   flex-direction: column;
   align-items: stretch;
   border-top: 20px outset #E5E4E2;
-  height: 93.55vh;
+  height: calc(100vh - 60px);
   background: #E5E4E2;
 }
 .budget-management .row{
@@ -508,6 +509,13 @@ export default {
   flex-wrap: nowrap;
   align-items: center;
 }
+.category-box-scrollable {
+    max-height: 53vh;
+    padding: 10px;
+    margin-bottom: 5px;
+    overflow-y: auto;
+}
+
 .delete-all-button {
     position: absolute;
     bottom: 10px;

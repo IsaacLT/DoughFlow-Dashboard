@@ -158,7 +158,7 @@ export default {
                 offsetY: -10,
                 show: true,
                 color: '#FFFFFF',
-                fontSize: '20px',
+                fontSize: '16px',
                 fontFamily: 'Roboto slab'
               },
               value: {
@@ -166,7 +166,7 @@ export default {
                   return parseInt(val) + '% Spent'
                 },
                 color: '#FFFFFF',
-                fontSize: '30px',
+                fontSize: '24px',
                 fontFamily: 'Roboto slab',
                 show: true
               }
@@ -261,9 +261,8 @@ export default {
       return this.categories.reduce((sum, category) => sum + category.totalAmount, 0)
     },
     checkPositive() {
-      if (this.amount < 0) {
+      if (this.amount <= 0) {
         this.$refs.toast.showToast('Invalid input', 'Please enter a positive number')
-        this.amount = 0
       }
     },
     handleAddCategory() {
