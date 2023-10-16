@@ -36,6 +36,7 @@
           <div class="category-section" v-if="selectedBudget">
             <div v-if="categories && categories.length">
               <h2 class="white-text">Categories for {{ selectedBudget.name }}</h2>
+            <div class="category-box-scrollable">
               <ul class="list-unstyled">
                 <li v-for="category in categories" :key="category._id" class="p-2 mb-3 border rounded">
                   <div class="category-container">
@@ -64,10 +65,12 @@
                       </li>
                     </ul>
                   </div>
+
                   <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteCategory(category._id)">Delete Category</button>
                 </div>
                 </li>
               </ul>
+            </div>
             </div>
             <div v-else>
               <h2 class="white-text">No categories for {{ selectedBudget.name }}</h2>
@@ -281,21 +284,6 @@ export default {
       }
     },
 
-    // Get expenses belonging to specific category
-    async fetchExpensesByCategory(categoryId) {
-      try {
-        const response = await Api.get(`/categories/${categoryId}/expenses`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
-        if (response.data && response.data.expenses && response.data.expenses.length > 0) {
-          this.expenses = response.data.expenses
-        } else {
-          console.log('No expenses found for this category')
-          this.expenses = []
-        }
-      } catch (error) {
-        console.error('Error fetching expenses by category:', error)
-      }
-    },
-
     // PUT update an expense
     async updateExpense(expenseToUpdate) {
       try {
@@ -396,15 +384,13 @@ export default {
 
     // Check to make sure that the number is positive, used for input forms fields
     checkPositiveBudget() {
-      if (this.newBudget.amount < 0) {
+      if (this.newBudget.amount <= 0) {
         this.$refs.toast.showToast('Invalid input', 'Please enter a positive number')
-        this.newBudget.amount = 0
       }
     },
     checkPositiveExpense() {
-      if (this.expenseAmount < 0) {
+      if (this.expenseAmount <= 0) {
         this.$refs.toast.showToast('Invalid input', 'Please enter a positive number')
-        this.expenseAmount = 0
       }
     }
 
@@ -419,7 +405,7 @@ export default {
   flex-direction: column;
   align-items: stretch;
   border-top: 20px outset #E5E4E2;
-  height: 93.55vh;
+  height: calc(100vh - 60px);
   background: #E5E4E2;
 }
 .budget-management .row{
@@ -427,24 +413,9 @@ export default {
   display: flex;
   align-items: stretch;
 }
-.budget-details {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
-}
-.budget-info {
-  margin-bottom: 5px;
-}
-.budget-actions {
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
-}
 .left-menu {
   display: flex;
   flex-direction: column;
-  /*height: 100%;*/
   position: relative;
   border-right: 10px solid #E5E4E2;
   flex-shrink: 1;
@@ -453,7 +424,6 @@ export default {
   padding: 5px;
   background:#1f8cdb;
 }
-
 .left-menu li {
   margin-bottom: 10px;
 }
@@ -463,7 +433,6 @@ export default {
 .left-menu ul {
   min-height: calc(100%-100px);
 }
-
 .right-section {
   flex: 0.5;
   flex-wrap: nowrap;
@@ -479,7 +448,6 @@ export default {
   display: flex;
   flex: 2;
   flex-direction: column;
-  /*flex-wrap: nowrap;*/
   background: #7fc9ff;
 }
 .budget-box {
@@ -494,11 +462,9 @@ export default {
     background-color: #57acbb;
   }
 }
-
 .left-menu ul {
   list-style-type: none;
 }
-
 .category-section {
   flex: 2;
   flex-direction: column;
@@ -510,7 +476,6 @@ export default {
 }
 .category-section li {
   padding: 5px 10px;
-  /*border: 1px solid #42bbf7;*/
   background: #ffffff;
   margin-bottom: 10px;
   border-radius: 4px;
@@ -522,12 +487,10 @@ export default {
 .category-section ul {
   list-style-type: none;
 }
-
 .category-box {
     display: inline-block;
     padding: 5px 10px;
     border: 1px solid #7fc9ff;
-    /*margin-right: 10px;*/
     margin-bottom: 10px;
     cursor: pointer;
     border-radius: 4px;
@@ -546,12 +509,13 @@ export default {
   flex-wrap: nowrap;
   align-items: center;
 }
-.delete-category-button {
-  margin-top: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.category-box-scrollable {
+    max-height: 53vh;
+    padding: 10px;
+    margin-bottom: 5px;
+    overflow-y: auto;
 }
+
 .delete-all-button {
     position: absolute;
     bottom: 10px;
@@ -602,8 +566,5 @@ export default {
 .save-expense-button {
   background-color: #50C878;
   border: none;
-}
-.expense-form {
-  margin-top: 10px;
 }
 </style>
