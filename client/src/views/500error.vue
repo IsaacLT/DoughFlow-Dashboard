@@ -28,7 +28,7 @@ export default {
 
 <style scoped>
 .vh-100 {
-  height: 100vh;
+  height: 93.55vh;
 }
 h1 {
   color: #1f8cdb;

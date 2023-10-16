@@ -307,7 +307,6 @@ export default {
     padding-bottom: 0px;
   }
   #barchartHeader {
-    font-family: 'Roboto Slab', sans-serif;
     font-weight: bold;
     color: white;
     padding-top: 8px;
