@@ -75,10 +75,8 @@ Our system is a financial management tool. Users can log individual expenses, up
 
 ### Entity-Relationship (ER) Diagram
 
-![ER Diagram](./images/ER_diagram_Doughflow_Dashboard.png)
+![ER Diagram](./images/ER diagram Doughflow Dashboard.png)
 
-## Teaser (MS3)
+## Finnished Website
 
-![Imgur](https://i.imgur.com/RYzSmIF.png)
-![Imgur](https://i.imgur.com/LGQhRId.png)
-![Imgur](./images/Budget Management.png)
+![Finnished website](./images/examplepics.png)
