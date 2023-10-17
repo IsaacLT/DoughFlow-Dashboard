@@ -79,4 +79,4 @@ Our system is a financial management tool. Users can log individual expenses, up
 
 ## Finnished Website
 
-![Finnished website](./images/examplepics.png)
+![Finnished website](./images/teaser.png)
