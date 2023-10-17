@@ -209,10 +209,8 @@ export default {
         categoryId: this.categoryId,
         date: currentDate
       }
-      console.log('Sending expense', newExpense)
       Api.post(`/categories/${categoryId}/expenses`, newExpense, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
-          console.log('Expense added successfully', response.data)
           this.amount = null
           this.description = ''
           this.categoryId = ''
@@ -249,7 +247,6 @@ export default {
       }
       Api.post(`/budgets/${budgetId}/categories`, newCategory, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
         .then(response => {
-          console.log('Category added successfully', response.data)
           this.categoryName = ''
           this.fetchCategories()
         })
@@ -261,8 +258,10 @@ export default {
       return this.categories.reduce((sum, category) => sum + category.totalAmount, 0)
     },
     checkPositive() {
-      if (this.amount <= 0) {
+      // const currAmount = this.amount
+      if (this.amount < 0) {
         this.$refs.toast.showToast('Invalid input', 'Please enter a positive number')
+        this.amount = 0
       }
     },
     handleAddCategory() {

@@ -52,14 +52,15 @@
                         {{ expense.description }}: {{ expense.amount }} kr
                         <div>{{ formatDate(expense.date) }}</div>
 
-                        <button v-if="showUpdateButtonId === expense._id" class="btn btn-info btn-sm ml-2 t-1 b-2" @click.stop="toggleUpdateForm(expense._id)">Update Expense</button>
+                        <button v-if="showUpdateButtonId === expense._id" class="btn btn-info btn-sm ml-2 t-1 b-2" @click.stop="toggleUpdateForm(expense)">Update Expense</button>
                         <div v-if="showUpdateForm === expense._id">
-
-                        <input v-model="expenseAmount" @input="checkPositiveExpense" placeholder="Amount" @click.stop class="form-control">
+                        <form @submit.prevent="updateExpense(expense)">
+                        <input v-model="expenseAmount" @input="checkPositiveExpense" placeholder="Amount" @click.stop class="form-control" required type="number">
                         <input v-model="expense.description" placeholder="Description" @click.stop class="form-control">
                         <input :value="formatDateForInput(expense.date)"  @input="expense.date = $event.target.value, checkPositive" type="date" placeholder="Date" @click.stop class="form-control">
-                        <button class="save-expense-button btn btn-info btn-sm ml-2 t-1 b-2" @click="updateExpense(expense)">Save</button>
+                        <button type="submit" class="save-expense-button btn btn-info btn-sm ml-2 t-1 b-2">Save</button>
                         <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteExpense(category, expense._id)">Delete Expense</button>
+                        </form>
                       </div>
                       </div>
                       </li>
@@ -127,7 +128,7 @@ export default {
           this.budgets = response.data
         })
         .catch(error => {
-          console.error('Error fetching categories', error)
+          this.$refs.toast.showToast('Error', 'An error ocurred, please try again')
         })
     },
 
@@ -152,7 +153,7 @@ export default {
           this.newBudget = { name: '', amount: 0 }
         }
       } catch (error) {
-        console.error('Error creating budget:', error)
+        this.$refs.toast.showToast('Error', 'An error ocurred, please try again')
       }
     },
 
@@ -178,7 +179,6 @@ export default {
       if (!response.ok) {
         throw new Error('Error fetching expenses for category')
       }
-      console.log(response.json)
       return response.json()
     },
 
@@ -197,13 +197,12 @@ export default {
           return category
         }))
       } catch (error) {
-        console.error('Error:', error.message)
+        this.$refs.toast.showToast('Error', 'An error ocurred, please try again')
       }
     },
 
     // Utilizing hateoas links, fetches the current budget and removes it from the list of budgets belonging to the currently logged in user
     async deleteBudget(budget) {
-      console.log('Budget data:', budget)
 
       // Check so that the budget object actually contains hateoas links
       if (!budget.links || !budget.links.delete) {
@@ -229,7 +228,7 @@ export default {
           alert(data.error)
         }
       } catch (error) {
-        console.error('Error deleting budget:', error)
+        this.$refs.toast.showToast('Error', 'An error ocurred, please try again')
       }
     },
 
@@ -247,7 +246,7 @@ export default {
         })
         if (!response.ok) {
           const data = await response.json()
-          console.error('Error deleting all budgets:', data.error)
+          this.$refs.toast.showToast('Error', 'Error deleting all budgets')
           alert(data.error)
           return
         }
@@ -255,7 +254,7 @@ export default {
         this.selectedBudget = null // Clear selected budget
         this.categories = [] // Clear categories
       } catch (error) {
-        console.error('Error deleting all budgets:', error)
+        this.$refs.toast.showToast('Error', 'Error deleting all budgets')
       }
     },
 
@@ -280,14 +279,14 @@ export default {
           alert(data.error)
         }
       } catch (error) {
-        console.error('Error deleting category:', error)
+        this.$refs.toast.showToast('Error', 'Error deleting category')
       }
     },
 
     // PUT update an expense
     async updateExpense(expenseToUpdate) {
+      expenseToUpdate.amount = this.expenseAmount
       try {
-        expenseToUpdate.amount = this.expenseAmount
         const updatedData = {
           amount: parseFloat(expenseToUpdate.amount),
           description: expenseToUpdate.description,
@@ -299,16 +298,14 @@ export default {
         })
 
         if (response.status === 200) {
-          console.log('After successful update:', this.showUpdateForm)
           this.$refs.toast.showToast('Expense Update', 'Expense updated successfully!')
           // Optionally update the local data or re-fetch the data
           this.showUpdateForm = false
-          console.log('After setting to false:', this.showUpdateForm)
         } else {
           this.$refs.toast.showToast('Expense Error', 'Error updating the expense!')
         }
       } catch (error) {
-        console.error('Error updating expense:', error)
+        this.$refs.toast.showToast('Error', 'Error updating expense')
       }
     },
 
@@ -337,18 +334,19 @@ export default {
           alert(data.error)
         }
       } catch (error) {
-        console.error('Error deleting category:', error)
+        this.$refs.toast.showToast('Error', 'Error deleting expense')
       }
     },
 
     // Show or hide the form for PUT updating expense
-    toggleUpdateForm(expenseId) {
-      if (this.showUpdateForm === expenseId) {
+    toggleUpdateForm(expense) {
+      if (this.showUpdateForm === expense._id) {
       // If the form the currently chosen expense is shown, hide it
         this.showUpdateForm = null
       } else {
       // Otherwise, show it
-        this.showUpdateForm = expenseId
+        this.showUpdateForm = expense._id
+        this.setExpenseAmount(expense.amount)
       }
     },
 
@@ -386,12 +384,17 @@ export default {
     checkPositiveBudget() {
       if (this.newBudget.amount <= 0) {
         this.$refs.toast.showToast('Invalid input', 'Please enter a positive number')
+        this.newBudget.amount = null
       }
     },
     checkPositiveExpense() {
       if (this.expenseAmount <= 0) {
         this.$refs.toast.showToast('Invalid input', 'Please enter a positive number')
+        this.expenseAmount = null
       }
+    },
+    setExpenseAmount(amount) {
+      this.expenseAmount = amount
     }
 
   }
