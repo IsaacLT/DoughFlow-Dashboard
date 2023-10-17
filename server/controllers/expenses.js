@@ -92,6 +92,13 @@ router.patch("/expenses/:id", authenticator, async (req, res) => {
 //DELETE: Delete an expense record by ID
 router.delete("/expenses/:id", authenticator, async (req, res) => {
     try {
+        const currentExpense = await expense.findById(req.params.id);
+        const currentAmount = currentExpense.amount;
+        const updatedCategory = await category.findOne({_id: currentExpense.categoryId})
+        if(updatedCategory) {
+            updatedCategory.totalAmount -= currentAmount;
+            updatedCategory.save();
+        }
         const deletedExpense = await expense.findByIdAndRemove(req.params.id);
         if (!deletedExpense) {
             res.status(404).json({ error: "Expense not found" });

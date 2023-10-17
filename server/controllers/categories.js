@@ -94,7 +94,7 @@ router.post('/categories/:id/expenses', authenticator, async function (req, res)
         const newExpense = new Expense({
             description: req.body.description,
             amount: req.body.amount,
-            userId: '6503106b83a74e0faa10c19d', //random ID for testing purposes
+            userId: req.body.userId,
             date: req.body.date,
             categoryId: category._id
         });

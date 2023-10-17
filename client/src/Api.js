@@ -11,6 +11,9 @@ Api.interceptors.response.use(
     return response
   },
   error => {
+    if (error.config && error.config.headers && error.config.headers['Handle-Error-In-Component']) {
+      return Promise.reject(error)
+    }
     if (error.response && error.response.status === 500) {
       router.push({ path: '/500' })
     } else if (!error.response || error.code === 'ECONNABORTED') {

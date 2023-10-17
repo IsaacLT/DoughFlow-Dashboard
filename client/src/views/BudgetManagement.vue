@@ -54,13 +54,11 @@
 
                         <button v-if="showUpdateButtonId === expense._id" class="btn btn-info btn-sm ml-2 t-1 b-2" @click.stop="toggleUpdateForm(expense)">Update Expense</button>
                         <div v-if="showUpdateForm === expense._id">
-                        <form @submit.prevent="updateExpense(expense)">
-                        <input v-model="expenseAmount" @input="checkPositiveExpense" placeholder="Amount" @click.stop class="form-control" required type="number">
+                        <input v-model="expenseAmount" @input="checkPositiveExpense(expense)" placeholder="Amount" @click.stop class="form-control" required type="number">
                         <input v-model="expense.description" placeholder="Description" @click.stop class="form-control">
                         <input :value="formatDateForInput(expense.date)"  @input="expense.date = $event.target.value, checkPositive" type="date" placeholder="Date" @click.stop class="form-control">
-                        <button type="submit" class="save-expense-button btn btn-info btn-sm ml-2 t-1 b-2">Save</button>
+                        <button type="submit" class="save-expense-button btn btn-info btn-sm ml-2 t-1 b-2" @click.stop="updateExpense(expense)">Save</button>
                         <button class="btn btn-danger btn-sm ml-2" @click.stop="deleteExpense(category, expense._id)">Delete Expense</button>
-                        </form>
                       </div>
                       </div>
                       </li>
@@ -123,13 +121,16 @@ export default {
     // Fetches budgets belonging to the currently logged in user by its username
     async getBudgets() {
       const username = localStorage.getItem('username')
-      Api.get(`/users/${username}/budgets`, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
-        .then(response => {
-          this.budgets = response.data
+      try {
+        const response = await Api.get(`/users/${username}/budgets`, {
+          headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
         })
-        .catch(error => {
-          this.$refs.toast.showToast('Error', 'An error ocurred, please try again')
-        })
+        this.budgets = response.data
+      } catch (error) {
+        if (this.$refs.toast && this.$refs.toast.showToast) {
+          this.$refs.toast.showToast('Error', 'Could not find user')
+        }
+      }
     },
 
     // Creates new budget and connects it to a user, then adds it to the list of budgets belonging to that user
@@ -203,7 +204,6 @@ export default {
 
     // Utilizing hateoas links, fetches the current budget and removes it from the list of budgets belonging to the currently logged in user
     async deleteBudget(budget) {
-
       // Check so that the budget object actually contains hateoas links
       if (!budget.links || !budget.links.delete) {
         alert('Delete action is not available for this budget.')
@@ -223,6 +223,7 @@ export default {
         if (response.ok) {
           // Remove the deleted budget from the list
           this.budgets = this.budgets.filter(b => b._id !== budget._id)
+          this.getBudgets()
         } else {
           const data = await response.json()
           alert(data.error)
@@ -387,10 +388,10 @@ export default {
         this.newBudget.amount = null
       }
     },
-    checkPositiveExpense() {
-      if (this.expenseAmount <= 0) {
+    checkPositiveExpense(expense) {
+      if (this.expenseAmount < 0) {
         this.$refs.toast.showToast('Invalid input', 'Please enter a positive number')
-        this.expenseAmount = null
+        this.expenseAmount = expense.amount
       }
     },
     setExpenseAmount(amount) {

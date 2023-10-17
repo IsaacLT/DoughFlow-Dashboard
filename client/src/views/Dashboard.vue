@@ -30,7 +30,7 @@
                   <!-- New category Popup -->
                   <div v-if="showPopup" class="popup">
                     <div class="form-group">
-                      <input class="form-control category-input" v-model="categoryName" @keyup.enter="handleAddCategory" placeholder="New category" />
+                      <input class="form-control category-input" type="text" v-model="categoryName" @keyup.enter="handleAddCategory" placeholder="New category" required/>
                       <button class="btn add-category-button" @click="handleAddCategory">Add</button>
                       <button class="btn exit-button" @click="showPopup = false">Exit</button>
                     </div>
@@ -107,7 +107,8 @@ export default {
       categoryId: '',
       categories: [],
       showPopup: false,
-      categoryName: ''
+      categoryName: '',
+      userId: ''
     }
   },
   computed: {
@@ -200,6 +201,22 @@ export default {
     switchToMyAccount() {
       this.$router.push('/my-account')
     },
+    async getUserId() {
+      try {
+        const response = await Api.get(`/users/${localStorage.getItem('username')}`, {
+          headers: { Authorization: 'Bearer ' + localStorage.getItem('token') }
+        })
+        if (response && response.data) {
+          this.userId = response.data._id
+        } else {
+          throw new Error('Response data is undefined')
+        }
+      } catch (error) {
+        if (this.$refs.toast && this.$refs.toast.showToast) {
+          this.$refs.toast.showToast('Error', 'Could not find user')
+        }
+      }
+    },
     async addExpense() {
       const currentDate = new Date().toISOString()
       const categoryId = this.categoryId
@@ -207,17 +224,21 @@ export default {
         amount: parseFloat(this.amount),
         description: this.description,
         categoryId: this.categoryId,
+        userId: this.userId,
         date: currentDate
       }
-      Api.post(`/categories/${categoryId}/expenses`, newExpense, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } })
+      Api.post(`/categories/${categoryId}/expenses`, newExpense, { headers: { Authorization: 'Bearer ' + localStorage.getItem('token'), 'Handle-Error-In-Component': true } })
         .then(response => {
           this.amount = null
           this.description = ''
           this.categoryId = ''
+          this.userId = ''
           this.fetchCategories()
         })
         .catch(error => {
           if (error.response && error.response.status === 404) {
+            this.$refs.toast.showToast('Error adding expense', 'Amount and/or Category is missing')
+          } else if (error.response && error.response.status === 500) {
             this.$refs.toast.showToast('Error adding expense', 'Amount and/or Category is missing')
           }
         })
@@ -237,6 +258,10 @@ export default {
         })
     },
     async addCategory() {
+      if (!this.categoryName || this.categoryName.trim() === '') {
+        this.$refs.toast.showToast('Invalid input', 'Category needs to have a name')
+        return
+      }
       if (!this.selectedBudget) {
         this.$refs.toast.showToast('Invalid input', 'No budget selected')
         return
@@ -258,7 +283,6 @@ export default {
       return this.categories.reduce((sum, category) => sum + category.totalAmount, 0)
     },
     checkPositive() {
-      // const currAmount = this.amount
       if (this.amount < 0) {
         this.$refs.toast.showToast('Invalid input', 'Please enter a positive number')
         this.amount = 0
@@ -271,6 +295,7 @@ export default {
   },
   mounted() {
     this.fetchCategories()
+    this.getUserId()
   }
 }
 </script>
